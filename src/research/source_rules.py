@@ -45,3 +45,11 @@ def classify_source(source_name: str, source_type: str) -> SourceAuthority:
         source_type=source_type,
         reason="Source authority has not been established.",
     )
+    
+def authority_rank(level: str) -> int:
+    return {
+        "high": 3,
+        "medium": 2,
+        "low": 1,
+        "unknown": 0,
+    }.get(level, 0)
