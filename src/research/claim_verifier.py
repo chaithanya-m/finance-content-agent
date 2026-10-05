@@ -112,3 +112,88 @@ def detect_conflict(
     )
 
     return claim
+
+def evidence_supports_claim(
+    claim: Claim,
+    evidence: EvidenceRecord,
+) -> bool:
+    claim_text = _normalize(claim.claim)
+    evidence_text = _normalize(evidence.supporting_text)
+
+    claim_numbers = _extract_numbers(claim_text)
+    evidence_numbers = _extract_numbers(evidence_text)
+
+    numbers_match = claim_numbers.issubset(evidence_numbers)
+
+    keywords = {
+        "repo",
+        "rate",
+        "policy",
+        "rbi",
+        "inflation",
+        "gdp",
+        "tax",
+        "income",
+        "interest",
+        "market",
+    }
+
+    claim_keywords = {
+        word for word in claim_text.split()
+        if word in keywords
+    }
+
+    evidence_keywords = {
+        word for word in evidence_text.split()
+        if word in keywords
+    }
+
+    keyword_match = bool(claim_keywords & evidence_keywords)
+
+    return numbers_match and keyword_match
+
+def evidence_relation(
+    claim: Claim,
+    evidence: EvidenceRecord,
+) -> str:
+    claim_text = _normalize(claim.claim)
+    evidence_text = _normalize(evidence.supporting_text)
+
+    claim_numbers = _extract_numbers(claim_text)
+    evidence_numbers = _extract_numbers(evidence_text)
+
+    keywords = {
+        "repo",
+        "rate",
+        "policy",
+        "rbi",
+        "inflation",
+        "gdp",
+        "tax",
+        "income",
+        "interest",
+        "market",
+    }
+
+    claim_keywords = {
+        word for word in claim_text.split()
+        if word in keywords
+    }
+
+    evidence_keywords = {
+        word for word in evidence_text.split()
+        if word in keywords
+    }
+
+    keyword_match = bool(claim_keywords & evidence_keywords)
+
+    if not keyword_match:
+        return "not_relevant"
+
+    if claim_numbers.issubset(evidence_numbers):
+        return "supporting"
+
+    if claim_numbers and evidence_numbers:
+        return "contradicting"
+
+    return "not_relevant"

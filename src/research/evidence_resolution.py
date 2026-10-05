@@ -8,6 +8,7 @@ from .source_rules import authority_rank
 class EvidenceWithAuthority:
     value: str
     source: SourceAuthority
+    relation: str
 
 
 def resolve_evidence(
@@ -27,10 +28,27 @@ def resolve_evidence(
         if authority_rank(item.source.authority_level) == highest_rank
     ]
 
-    if len(highest) > 1:
-        values = {item.value for item in highest}
+    supporting = [
+        item
+        for item in highest
+        if item.relation == "supporting"
+    ]
 
-        if len(values) > 1:
-            return None
+    contradicting = [
+        item
+        for item in highest
+        if item.relation == "contradicting"
+    ]
 
-    return highest[0]
+    # Equal-authority sources disagree.
+    if supporting and contradicting:
+        return None
+
+    if not supporting:
+        return None
+
+    return supporting[0]
+
+
+def is_verifiable_authority(level: str) -> bool:
+    return level in {"high", "medium"}

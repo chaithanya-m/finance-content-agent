@@ -8,12 +8,19 @@ VerificationStatus = Literal[
     "conflicting",
 ]
 
+EvidenceSupport = Literal[
+    "supporting",
+    "contradicting",
+    "not_relevant",
+]
+
 
 @dataclass
 class Evidence:
     source_name: str
     source_url: str
     evidence_text: str
+    support: EvidenceSupport
     published_at: str | None = None
 
 
