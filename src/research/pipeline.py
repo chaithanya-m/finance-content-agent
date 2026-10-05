@@ -2,7 +2,10 @@ from .claim import Claim, Evidence
 from .evidence import EvidenceRecord
 
 
-def evidence_to_claim(record: EvidenceRecord) -> Claim:
+def evidence_to_claim(
+    record: EvidenceRecord,
+    status: str = "unverified",
+) -> Claim:
     evidence = Evidence(
         source_name=record.source.source_name,
         source_url=record.source.source_url,
@@ -12,6 +15,6 @@ def evidence_to_claim(record: EvidenceRecord) -> Claim:
 
     return Claim(
         claim=record.claim,
-        status="verified",
+        status=status,
         evidence=[evidence],
     )

@@ -20,6 +20,6 @@ class Evidence:
 @dataclass
 class Claim:
     claim: str
-    status: VerificationStatus
+    status: VerificationStatus = "unverified"
     evidence: list[Evidence] = field(default_factory=list)
     notes: str | None = None
