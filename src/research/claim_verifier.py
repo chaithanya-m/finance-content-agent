@@ -69,3 +69,46 @@ def verify_claim(claim: Claim, evidence: EvidenceRecord) -> Claim:
         )
 
     return claim
+
+def detect_conflict(
+    claim: Claim,
+    evidence_records: list[EvidenceRecord],
+) -> Claim:
+    claim_numbers = _extract_numbers(claim.claim)
+
+    if not claim_numbers:
+        claim.status = "unverified"
+        claim.notes = "Claim does not contain a numeric value to compare."
+        return claim
+
+    claimed_value = next(iter(claim_numbers))
+
+    matching_evidence = []
+
+    for record in evidence_records:
+        evidence_text = _normalize(record.supporting_text)
+
+        if claimed_value in evidence_text:
+            matching_evidence.append(record)
+
+    if len(matching_evidence) == len(evidence_records):
+        claim.status = "verified"
+        claim.notes = (
+            "All supplied evidence records contain the claimed value."
+        )
+        return claim
+
+    if matching_evidence:
+        claim.status = "conflicting"
+        claim.notes = (
+            "Some evidence supports the claimed value while other "
+            "evidence does not."
+        )
+        return claim
+
+    claim.status = "unverified"
+    claim.notes = (
+        "None of the supplied evidence records contain the claimed value."
+    )
+
+    return claim
