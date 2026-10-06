@@ -92,23 +92,25 @@ Every important extracted claim must go through deterministic MCP verification b
 For every important financial claim that will be used in the final research output:
 
 1. Obtain the actual source evidence first.
-2. Call the `finance-research` MCP tool `verify_claim` with:
+2. Preserve:
    - Exact claim
    - Source name
    - Source URL
    - Source type
    - Exact supporting text
    - Publication/update date when available
-3. Treat the MCP verification result as authoritative for the claim's verification status.
-4. Do not mark a claim as verified based only on your own reasoning.
-5. If the MCP tool returns `unverified` or `conflicting`, do not present the claim as verified.
-6. Preserve the exact source evidence used for verification.
-7. Do not change the wording of a verified claim in a way that changes its meaning.
-8. If a claim cannot be deterministically verified, classify it as `UNVERIFIED` or `CONFLICTING` as appropriate.
+3. When verifying multiple claims, call the `finance-research` MCP tool `verify_claims`.
+4. Include all evidence records for each claim in the same batch request.
+5. Use `verify_claim` only when there is exactly one claim with exactly one evidence record.
+6. Treat the MCP verification result as authoritative for each claim's status.
+7. Do not mark a claim as verified based only on model reasoning.
+8. If the MCP result is `unverified` or `conflicting`, do not present the claim as verified.
+9. Preserve the exact source evidence used for verification.
+10. Do not change the wording of a verified claim in a way that changes its meaning.
 
 A claim is considered verified only when:
 
-- The actual source supports the claim, and
+- The actual source evidence supports the claim, and
 - The deterministic MCP verification result confirms the claim.
 
 Do not say that a claim is verified merely because multiple websites repeat it.
@@ -117,13 +119,14 @@ Do not say that a claim is verified merely because multiple websites repeat it.
 
 Use the MCP tools according to the evidence structure:
 
-- Use `verify_claim` when verifying one claim against one evidence record.
-- Use `verify_claims` when verifying multiple claims or when any claim has multiple evidence records.
+- Use `verify_claim` for one claim with one evidence record.
+- Use `verify_claims` for multiple claims.
+- Use `verify_claims` when any claim has multiple evidence records.
 - When a claim has multiple sources, include all source evidence for that claim in the same `verify_claims` request.
-- Do not verify each source independently and then manually combine the results.
+- Do not verify sources independently and manually combine the results.
 - Preserve the MCP result for every claim.
-- Use the returned `status` as the authoritative verification status.
-- Use the returned `all_verified` field only for the overall batch result.
+- Use each returned `status` as the authoritative verification status.
+- Use `all_verified` only for the overall batch result.
 
 ## 6. Numbers
 
