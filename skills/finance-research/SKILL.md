@@ -173,3 +173,20 @@ Before finishing, check:
 - Did I avoid invented terminology?
 - Did I separate facts from analysis?
 - Did I clearly identify anything unverified?
+
+## Deterministic claim verification
+
+For every important financial claim that will be used in the final research output:
+
+1. Obtain the actual source evidence first.
+2. Call the `finance-research` MCP tool `verify_claim` with:
+   - the exact claim
+   - source name
+   - source URL
+   - source type
+   - exact supporting text
+   - publication date when available
+3. Treat the MCP verification result as authoritative for the claim's verification status.
+4. Do not mark a claim as verified based only on your own reasoning.
+5. If the MCP tool returns `unverified` or `conflicting`, do not present the claim as verified.
+6. Preserve the exact source evidence used for verification.
