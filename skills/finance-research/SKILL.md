@@ -190,3 +190,21 @@ For every important financial claim that will be used in the final research outp
 4. Do not mark a claim as verified based only on your own reasoning.
 5. If the MCP tool returns `unverified` or `conflicting`, do not present the claim as verified.
 6. Preserve the exact source evidence used for verification.
+
+## Source discovery
+
+When researching a topic:
+
+1. Use OpenClaw web search to discover current sources.
+2. Prefer official and primary sources:
+   - RBI
+   - SEBI
+   - Government of India
+   - Income Tax Department
+   - Ministry of Finance
+   - Official company filings
+3. Use reputable financial/news sources when primary sources are unavailable.
+4. Fetch the actual source page before using a claim.
+5. Never treat search-result snippets as evidence.
+6. Record the source URL and the exact supporting text for every important claim.
+7. Pass important claims and their supporting evidence to the `finance-research` MCP `verify_claim` tool.
