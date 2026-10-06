@@ -7,6 +7,7 @@ class SourceDocument:
     source_url: str
     title: str
     content: str
+    source_type: str
     published_at: str | None = None
 
 

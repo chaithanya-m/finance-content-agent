@@ -9,8 +9,11 @@ def _normalize(text: str) -> str:
 
 
 def _extract_numbers(text: str) -> set[str]:
-    return set(re.findall(r"\d+(?:\.\d+)?%?", text))
+    text = re.sub(r"(\d+(?:\.\d+)?)\s*(?:per\s*cent|percent)", r"\1%", text.lower())
 
+    return set(
+        re.findall(r"\d+(?:\.\d+)?%?", text)
+    )
 
 def verify_claim(claim: Claim, evidence: EvidenceRecord) -> Claim:
     claim_text = _normalize(claim.claim)

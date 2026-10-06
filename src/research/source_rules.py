@@ -3,6 +3,7 @@ from .source_authority import SourceAuthority
 
 HIGH_AUTHORITY_SOURCES = {
     "rbi",
+    "reserve bank of india",
     "sebi",
     "income tax department",
     "government of india",
@@ -45,7 +46,7 @@ def classify_source(source_name: str, source_type: str) -> SourceAuthority:
         source_type=source_type,
         reason="Source authority has not been established.",
     )
-    
+
 def authority_rank(level: str) -> int:
     return {
         "high": 3,
