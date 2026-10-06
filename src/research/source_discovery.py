@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from .research_request import ResearchRequest
+
 
 @dataclass
 class SourceCandidate:
@@ -10,6 +12,9 @@ class SourceCandidate:
     published_at: str | None = None
 
 
-class SourceDiscovery:
-    def search(self, research_question: str) -> list[SourceCandidate]:
+class ResearchSourceDiscovery:
+    def discover(
+        self,
+        request: ResearchRequest,
+    ) -> list[SourceCandidate]:
         raise NotImplementedError
