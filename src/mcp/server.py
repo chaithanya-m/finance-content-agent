@@ -64,29 +64,34 @@ async def verify_claim(
 async def verify_claims(
     claims: list[dict],
 ) -> dict:
-    """Verify multiple finance claims against supplied source evidence."""
+    """Verify multiple finance claims against multiple source evidence records."""
 
     results = []
 
     for item in claims:
-        source = create_source_document(
-            source_name=item["source_name"],
-            source_url=item["source_url"],
-            title=item["source_name"],
-            content=item["supporting_text"],
-            source_type=item["source_type"],
-            published_at=item.get("published_at"),
-        )
+        evidence_records = []
 
-        evidence = create_evidence_record(
-            claim=item["claim"],
-            source=source,
-            supporting_text=item["supporting_text"],
-        )
+        for evidence_item in item["evidence"]:
+            source = create_source_document(
+                source_name=evidence_item["source_name"],
+                source_url=evidence_item["source_url"],
+                title=evidence_item.get("title", evidence_item["source_name"]),
+                content=evidence_item["supporting_text"],
+                source_type=evidence_item["source_type"],
+                published_at=evidence_item.get("published_at"),
+            )
+
+            evidence_records.append(
+                create_evidence_record(
+                    claim=item["claim"],
+                    source=source,
+                    supporting_text=evidence_item["supporting_text"],
+                )
+            )
 
         result = research_claim(
             claim_text=item["claim"],
-            evidence_records=[evidence],
+            evidence_records=evidence_records,
         )
 
         results.append({
