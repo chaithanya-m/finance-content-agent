@@ -163,7 +163,6 @@ def evidence_relation(
     evidence_text = _normalize(evidence.supporting_text)
 
     claim_numbers = _extract_numbers(claim_text)
-    evidence_numbers = _extract_numbers(evidence_text)
 
     keywords = {
         "repo",
@@ -193,10 +192,25 @@ def evidence_relation(
     if not keyword_match:
         return "not_relevant"
 
-    if claim_numbers.issubset(evidence_numbers):
+    if not claim_numbers:
+        return "not_relevant"
+
+    # A source may contain historical or unrelated numbers.
+    # Only treat it as supporting when the claimed value appears
+    # directly in the evidence text.
+    normalized_claim_numbers = {
+        number.rstrip("%")
+        for number in claim_numbers
+    }
+
+    normalized_evidence_numbers = {
+        number.rstrip("%")
+        for number in _extract_numbers(evidence_text)
+    }
+
+    if normalized_claim_numbers.issubset(normalized_evidence_numbers):
         return "supporting"
 
-    if claim_numbers and evidence_numbers:
-        return "contradicting"
-
+    # Do not automatically classify missing numbers as contradictory.
+    # The evidence may contain multiple periods, rates, or table values.
     return "not_relevant"
