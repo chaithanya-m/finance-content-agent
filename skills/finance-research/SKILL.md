@@ -113,6 +113,18 @@ A claim is considered verified only when:
 
 Do not say that a claim is verified merely because multiple websites repeat it.
 
+### MCP tool selection
+
+Use the MCP tools according to the evidence structure:
+
+- Use `verify_claim` when verifying one claim against one evidence record.
+- Use `verify_claims` when verifying multiple claims or when any claim has multiple evidence records.
+- When a claim has multiple sources, include all source evidence for that claim in the same `verify_claims` request.
+- Do not verify each source independently and then manually combine the results.
+- Preserve the MCP result for every claim.
+- Use the returned `status` as the authoritative verification status.
+- Use the returned `all_verified` field only for the overall batch result.
+
 ## 6. Numbers
 
 Treat every financial number as requiring verification.
