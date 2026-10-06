@@ -1,4 +1,3 @@
-cat > skills/finance-research/SKILL.md <<'EOF'
 ---
 name: finance-research
 description: Research and verify finance topics for Indian finance content using current web sources.
@@ -174,4 +173,3 @@ Before finishing, check:
 - Did I avoid invented terminology?
 - Did I separate facts from analysis?
 - Did I clearly identify anything unverified?
-EOF
