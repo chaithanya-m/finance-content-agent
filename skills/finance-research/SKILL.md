@@ -7,99 +7,39 @@ description: Research and verify finance topics for Indian finance content using
 
 You are responsible for producing reliable, source-backed finance research.
 
-## Research process
+## 1. Research Question
 
-Always follow this order:
+Before researching:
 
 1. Understand the exact research question.
-2. Search the web for current information.
-3. Prefer primary sources first.
-4. For Indian finance topics, prioritize:
-   - RBI
-   - SEBI
-   - Government of India
-   - Ministry of Finance
-   - Income Tax Department
-   - Official company filings and investor-relations pages
-   - Official regulatory publications
-5. Use reputable secondary sources only when a primary source is unavailable or insufficient.
-6. Fetch and inspect the actual source page whenever possible.
-7. Do not treat a search-result snippet as source verification.
-8. Do not rely on model memory for current financial facts.
+2. Identify what information needs to be established.
+3. Identify any time-sensitive requirements.
+4. Identify all financial figures, dates, rates, percentages, thresholds, limits, prices, returns, or market statistics that will require verification.
 
-## Source verification
+Do not begin analysis before understanding the exact research question.
 
-For every important factual claim, record:
+## 2. Source Discovery
 
-- Claim
-- Source name
-- Source URL
-- Source publication/update date when available
-- Verification status
+When researching a topic:
 
-A claim is considered verified only when the source itself supports the claim.
+1. Use OpenClaw web search to discover current sources.
+2. Search for current information whenever the question is time-sensitive.
+3. Prefer primary and authoritative sources.
 
-Do not say that a claim is verified merely because multiple websites repeat it.
+For Indian finance topics, prioritize:
 
-## Numbers
+- RBI
+- SEBI
+- Government of India
+- Ministry of Finance
+- Income Tax Department
+- Official company filings
+- Official company investor-relations pages
+- Official regulatory publications
 
-Treat every financial number as requiring verification.
+Use reputable secondary sources only when primary sources are unavailable or insufficient.
 
-This includes:
-
-- interest rates
-- tax rates
-- prices
-- returns
-- percentages
-- dates
-- limits
-- thresholds
-- market statistics
-- company financial figures
-
-Never invent or estimate a number.
-
-If a number cannot be verified, mark it:
-
-UNVERIFIED
-
-and do not present it as fact.
-
-## Facts vs interpretation
-
-Clearly separate:
-
-### Verified Facts
-Information directly supported by sources.
-
-### Analysis
-Reasoning based on verified facts.
-
-### Content Ideas
-Potential ways the research could be turned into useful content.
-
-Never present analysis or assumptions as sourced facts.
-
-## Financial terminology
-
-Do not invent financial, regulatory, banking, tax, or investment terminology.
-
-If a term is unfamiliar or uncertain:
-
-1. Search for it.
-2. Prefer an official source.
-3. If it cannot be verified, do not use it.
-
-## Current information
-
-For time-sensitive questions, always perform fresh web research.
-
-Never assume that information is current because it exists in model knowledge.
-
-Include the relevant date with current figures whenever possible.
-
-## Source quality
+### Source quality priority
 
 Prefer sources in this order:
 
@@ -111,12 +51,166 @@ Prefer sources in this order:
 
 If primary and secondary sources disagree:
 
-- report the disagreement,
-- investigate further,
-- prefer the authoritative primary source,
-- do not silently choose one.
+- Report the disagreement.
+- Investigate further.
+- Prefer the authoritative primary source.
+- Do not silently choose one source.
 
-## Required output
+## 3. Source Inspection
+
+After discovering a potentially relevant source:
+
+1. Fetch and inspect the actual source page whenever possible.
+2. Do not treat a search-result snippet as source verification.
+3. Never use a search-result snippet as the sole evidence for an important claim.
+4. Record the source URL.
+5. Record the source publication/update date when available.
+6. Preserve the exact supporting text for important claims.
+
+Do not rely on model memory for current financial facts.
+
+## 4. Claim Extraction
+
+Before producing the final research output:
+
+1. Extract every important factual claim from the inspected source evidence.
+2. Treat each financial number, rate, percentage, date, threshold, limit, price, return, or market statistic as an important claim.
+3. Preserve each claim in a precise form that can be checked against the source evidence.
+4. Do not merge separate claims if doing so could change their meaning.
+5. For each important claim, preserve:
+   - Exact claim
+   - Source name
+   - Source URL
+   - Exact supporting text
+   - Source publication/update date when available
+   - Source type
+
+Every important extracted claim must go through deterministic MCP verification before it can appear under `Verified Facts` or `Important Numbers`.
+
+## 5. Deterministic Claim Verification
+
+For every important financial claim that will be used in the final research output:
+
+1. Obtain the actual source evidence first.
+2. Call the `finance-research` MCP tool `verify_claim` with:
+   - Exact claim
+   - Source name
+   - Source URL
+   - Source type
+   - Exact supporting text
+   - Publication/update date when available
+3. Treat the MCP verification result as authoritative for the claim's verification status.
+4. Do not mark a claim as verified based only on your own reasoning.
+5. If the MCP tool returns `unverified` or `conflicting`, do not present the claim as verified.
+6. Preserve the exact source evidence used for verification.
+7. Do not change the wording of a verified claim in a way that changes its meaning.
+8. If a claim cannot be deterministically verified, classify it as `UNVERIFIED` or `CONFLICTING` as appropriate.
+
+A claim is considered verified only when:
+
+- The actual source supports the claim, and
+- The deterministic MCP verification result confirms the claim.
+
+Do not say that a claim is verified merely because multiple websites repeat it.
+
+## 6. Numbers
+
+Treat every financial number as requiring verification.
+
+This includes:
+
+- Interest rates
+- Tax rates
+- Prices
+- Returns
+- Percentages
+- Dates
+- Limits
+- Thresholds
+- Market statistics
+- Company financial figures
+- Valuations
+- Revenue
+- Profit
+- Market capitalization
+- Fees
+- Charges
+- Investment amounts
+- Growth rates
+
+Never invent, estimate, or infer a financial number.
+
+If a number cannot be verified, mark it:
+
+`UNVERIFIED`
+
+If sources provide conflicting numbers, mark the number:
+
+`CONFLICTING`
+
+Do not present either as an established fact until the conflict has been investigated and resolved.
+
+Include the relevant date with current figures whenever possible.
+
+## 7. Financial Terminology
+
+Do not invent financial, regulatory, banking, tax, or investment terminology.
+
+If a term is unfamiliar or uncertain:
+
+1. Search for it.
+2. Prefer an official source.
+3. Confirm that the terminology is actually used by an authoritative source.
+4. If it cannot be verified, do not use it as established terminology.
+
+When appropriate, explain technical terminology using the wording supported by the authoritative source.
+
+## 8. Current Information
+
+For time-sensitive questions, always perform fresh web research.
+
+Never assume that information is current because it exists in model knowledge.
+
+For current information:
+
+- Verify the latest available source.
+- Record the relevant date.
+- Prefer recently published or updated primary sources.
+- Check whether older information has been superseded.
+
+## 9. Facts vs Analysis
+
+Clearly separate sourced facts from interpretation.
+
+### Verified Facts
+
+Only include claims that:
+
+- Are directly supported by the inspected source evidence, and
+- Have passed deterministic MCP verification.
+
+### Analysis
+
+Explain what the verified facts mean.
+
+Analysis may include:
+
+- Comparisons
+- Implications
+- Reasoning
+- Context
+- Potential effects
+- Interpretation
+
+Never present analysis, assumptions, predictions, or opinions as sourced facts.
+
+### Content Opportunities
+
+Suggest useful finance-content angles based only on the verified research.
+
+Do not introduce unsupported facts merely to make a content idea more interesting.
+
+## 10. Required Output
 
 Return research using this structure:
 
@@ -124,31 +218,37 @@ Return research using this structure:
 
 ## Research Question
 
+Clearly state the question being researched.
+
 ## Verified Facts
 
-For each fact:
+For each verified fact:
 
-- Fact:
-- Source:
-- URL:
-- Date:
-- Verification:
+- **Fact:**
+- **Source:**
+- **URL:**
+- **Date:**
+- **Verification:** Verified
+- **Supporting Evidence:** Exact source text supporting the claim
 
 ## Important Numbers
 
-For each number:
+For each important number:
 
-- Number:
-- What it represents:
-- Source:
-- Date:
-- Verification:
+- **Number:**
+- **What it represents:**
+- **Source:**
+- **Date:**
+- **Verification:** Verified / Unverified / Conflicting
+- **Supporting Evidence:** Exact source text supporting the number
 
 ## Analysis
 
 Explain what the verified facts mean.
 
 Clearly label interpretation as analysis.
+
+Do not introduce unsupported factual claims.
 
 ## Content Opportunities
 
@@ -158,53 +258,58 @@ Suggest useful finance-content angles based only on the verified research.
 
 List claims that could not be verified.
 
+For each item include:
+
+- **Claim:**
+- **Reason:**
+- **Source(s) checked:**
+- **Status:** Unverified / Conflicting
+
 ## Sources
 
 List all important sources used.
+
+For each source include:
+
+- Source name
+- URL
+- Source type
+- Publication/update date when available
 
 ## Final Verification
 
 Before finishing, check:
 
-- Did I use current web research?
+- Did I understand the exact research question?
+- Did I perform current web research where required?
 - Did I prioritize primary sources?
-- Did I inspect the actual source where possible?
-- Does every important number have a source?
-- Did I avoid invented terminology?
-- Did I separate facts from analysis?
-- Did I clearly identify anything unverified?
+- Did I inspect the actual source page where possible?
+- Did I avoid treating search-result snippets as evidence?
+- Did I extract all important factual claims?
+- Did every important claim go through deterministic MCP verification?
+- Does every important number have supporting source evidence?
+- Did I avoid invented or unverified terminology?
+- Did I separate verified facts from analysis?
+- Did I clearly identify unverified or conflicting information?
+- Did I preserve the exact evidence used for verification?
+- Did I avoid relying on model memory for current financial facts?
 
-## Deterministic claim verification
+## Verification Rules
 
-For every important financial claim that will be used in the final research output:
+The following rules are mandatory:
 
-1. Obtain the actual source evidence first.
-2. Call the `finance-research` MCP tool `verify_claim` with:
-   - the exact claim
-   - source name
-   - source URL
-   - source type
-   - exact supporting text
-   - publication date when available
-3. Treat the MCP verification result as authoritative for the claim's verification status.
-4. Do not mark a claim as verified based only on your own reasoning.
-5. If the MCP tool returns `unverified` or `conflicting`, do not present the claim as verified.
-6. Preserve the exact source evidence used for verification.
-
-## Source discovery
-
-When researching a topic:
-
-1. Use OpenClaw web search to discover current sources.
-2. Prefer official and primary sources:
-   - RBI
-   - SEBI
-   - Government of India
-   - Income Tax Department
-   - Ministry of Finance
-   - Official company filings
-3. Use reputable financial/news sources when primary sources are unavailable.
-4. Fetch the actual source page before using a claim.
-5. Never treat search-result snippets as evidence.
-6. Record the source URL and the exact supporting text for every important claim.
-7. Pass important claims and their supporting evidence to the `finance-research` MCP `verify_claim` tool.
+1. Search current sources when required.
+2. Prefer authoritative primary sources.
+3. Inspect the actual source whenever possible.
+4. Extract important claims from source evidence.
+5. Treat financial numbers as claims requiring verification.
+6. Pass important claims and their evidence to the `finance-research` MCP `verify_claim` tool.
+7. Treat the MCP verification result as authoritative.
+8. Never mark a claim as verified based solely on model reasoning.
+9. Never use repeated reporting across multiple websites as proof of verification.
+10. Never invent missing numbers.
+11. Never present `UNVERIFIED` or `CONFLICTING` claims as verified facts.
+12. Clearly distinguish sourced facts from analysis.
+13. Preserve source URLs and supporting evidence for important claims.
+14. When sources disagree, investigate and prefer the authoritative primary source when appropriate.
+15. Do not rely on model memory for current financial information.

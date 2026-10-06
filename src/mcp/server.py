@@ -60,6 +60,77 @@ async def verify_claim(
     }
 
 
+@server.tool()
+async def verify_claims(
+    claims: list[dict],
+) -> dict:
+    """Verify multiple finance claims against supplied source evidence."""
+
+    results = []
+
+    for item in claims:
+        source = create_source_document(
+            source_name=item["source_name"],
+            source_url=item["source_url"],
+            title=item["source_name"],
+            content=item["supporting_text"],
+            source_type=item["source_type"],
+            published_at=item.get("published_at"),
+        )
+
+        evidence = create_evidence_record(
+            claim=item["claim"],
+            source=source,
+            supporting_text=item["supporting_text"],
+        )
+
+        result = research_claim(
+            claim_text=item["claim"],
+            evidence_records=[evidence],
+        )
+
+        results.append({
+            "claim": result.claim,
+            "status": result.status,
+            "notes": result.notes,
+            "evidence": [
+                {
+                    "source_name": evidence_item.source_name,
+                    "source_url": evidence_item.source_url,
+                    "support": evidence_item.support,
+                    "evidence_text": evidence_item.evidence_text,
+                    "published_at": evidence_item.published_at,
+                }
+                for evidence_item in result.evidence
+            ],
+        })
+
+    counts = {
+        "verified": sum(
+            result["status"] == "verified"
+            for result in results
+        ),
+        "unverified": sum(
+            result["status"] == "unverified"
+            for result in results
+        ),
+        "conflicting": sum(
+            result["status"] == "conflicting"
+            for result in results
+        ),
+    }
+
+    return {
+        "total_claims": len(results),
+        "counts": counts,
+        "all_verified": (
+            len(results) > 0
+            and counts["verified"] == len(results)
+        ),
+        "results": results,
+    }
+
+
 async def main() -> None:
     await server.run_stdio_async()
 
