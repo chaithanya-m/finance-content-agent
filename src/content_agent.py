@@ -1,5 +1,6 @@
 from .research.topic import Topic
 from .research.research_agent import ResearchAgent
+from .research.research_request import ResearchRequest
 from .research_content_generator import ResearchContentGenerator
 from .content_validator import ContentValidator
 from .instagram_publisher import InstagramPublisher
@@ -17,11 +18,16 @@ class ContentAgent:
         self.publisher = publisher
 
     def run(self, topic: Topic) -> str:
-        report = self.research_agent.research(topic.title)
+        request = ResearchRequest(
+            topic=topic.title,
+            research_question=f"What should we know about {topic.title}?",
+        )
+
+        report = self.research_agent.research(request)
 
         post = self.generator.generate(report)
 
-        if not self.validator.validate(post):
+        if not self.validator.validate(post, report):
             raise ValueError("Generated content failed validation.")
 
         return self.publisher.publish(post)

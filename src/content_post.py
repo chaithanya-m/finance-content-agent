@@ -9,3 +9,4 @@ class InstagramPost:
     caption: str = ""
     call_to_action: str = ""
     sources: list[str] = field(default_factory=list)
+    claims: list[str] = field(default_factory=list)

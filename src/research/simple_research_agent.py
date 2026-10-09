@@ -1,10 +1,11 @@
 from .research_agent import ResearchAgent
 from .research_report import ResearchReport
+from .research_request import ResearchRequest
 
 
 class SimpleResearchAgent(ResearchAgent):
-    def research(self, topic: str) -> ResearchReport:
+    def research(self, request: ResearchRequest) -> ResearchReport:
         return ResearchReport(
-            topic=topic,
-            research_question=f"What should we know about {topic}?",
+            topic=request.topic,
+            research_question=request.research_question,
         )
