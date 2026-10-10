@@ -14,23 +14,50 @@ def build_research_report(
         research_question=research_question,
     )
 
-    for claim in claims:
-        evidence = evidence_by_claim.get(claim, [])
+    seen_source_urls: set[str] = set()
+
+    for claim_text in claims:
+        evidence = evidence_by_claim.get(claim_text, [])
 
         result = research_claim(
-            claim_text=claim,
+            claim_text=claim_text,
             evidence_records=evidence,
         )
 
-        report.sources.extend(
-            item.source_url
-            for item in result.evidence
-            if item.source_url not in report.sources
-        )
+        fact = {
+            "fact": result.claim,
+            "status": result.status,
+            "evidence": [
+                {
+                    "source_name": item.source_name,
+                    "source_url": item.source_url,
+                    "evidence_text": item.evidence_text,
+                    "support": item.support,
+                    "published_at": item.published_at,
+                }
+                for item in result.evidence
+            ],
+            "notes": result.notes,
+        }
 
         if result.status == "verified":
-            report.verified_facts.append(claim)
+            report.verified_facts.append(fact)
         else:
-            report.unverified_claims.append(claim)
+            report.unverified_claims.append(fact)
 
+        for record in evidence:
+            source = record.source
+
+            if source.source_url in seen_source_urls:
+                continue
+
+            seen_source_urls.add(source.source_url)
+            report.sources.append(
+                {
+                    "source_name": source.source_name,
+                    "source_url": source.source_url,
+                    "published_at": source.published_at,
+                }
+            )
+            
     return report
