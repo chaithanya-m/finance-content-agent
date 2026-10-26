@@ -5,6 +5,16 @@ from .research.research_report import ResearchReport
 
 
 class ContentValidator:
+    SAFE_CAPTION = (
+        "Educational content only; this is not personalized financial advice."
+    )
+    SAFE_CALL_TO_ACTION = "Review the cited sources before sharing."
+
+    @staticmethod
+    def hook_for_topic(topic: str) -> str:
+        topic = topic.strip()
+        return topic if topic.endswith("?") else f"What should you know about {topic}?"
+
     FORBIDDEN_PATTERNS = [
         r"\bguaranteed?\b",
         r"\bguaranteed returns?\b",
@@ -50,6 +60,15 @@ class ContentValidator:
         if not all(self._is_valid_url(url) for url in post.sources):
             return False
 
+        if not post.hook.strip().endswith("?"):
+            return False
+
+        if post.caption != self.SAFE_CAPTION:
+            return False
+
+        if post.call_to_action != self.SAFE_CALL_TO_ACTION:
+            return False
+
         text = self._all_text(post).lower()
 
         if self._contains_forbidden_claim(text):
@@ -59,10 +78,25 @@ class ContentValidator:
             return False
 
         if report is not None:
+            if (
+                post.topic != report.topic
+                or post.hook != self.hook_for_topic(report.topic)
+            ):
+                return False
+
             if not self._numbers_are_supported(post, report):
                 return False
 
             if not self._claims_are_supported(post, report):
+                return False
+
+            allowed_sources = {
+                item.get("source_url")
+                for item in report.sources
+                if isinstance(item, dict)
+                and isinstance(item.get("source_url"), str)
+            }
+            if not set(post.sources).issubset(allowed_sources):
                 return False
 
         return True
@@ -178,9 +212,17 @@ class ContentValidator:
         if not post.claims:
             return False
 
-        return all(
-            self._normalize_claim(claim) in verified_claims
-            for claim in post.claims
+        slide_claims = [
+            self._normalize_claim(slide)
+            for slide in post.slides
+            if isinstance(slide, str)
+        ]
+        claims = [self._normalize_claim(claim) for claim in post.claims]
+        return (
+            len(slide_claims) == len(post.slides)
+            and len(claims) == len(post.claims)
+            and slide_claims == claims
+            and all(claim in verified_claims for claim in claims)
         )
 
     def _normalize_claim(self, claim: str) -> str:

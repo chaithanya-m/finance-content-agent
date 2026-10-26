@@ -268,21 +268,16 @@ class DraftContentWorkflow:
             and isinstance(fact.get("fact"), str)
         ]
         if not verified_facts:
-            samples = [
-                {
-                    "type": type(item).__name__,
-                    "keys": list(item.keys())[:10]
-                    if isinstance(item, dict) else None,
-                }
-                for item in report.verified_facts[:3]
+            research_notes = [
+                item.get("notes", item.get("fact", ""))
+                for item in report.unverified_claims[:3]
+                if isinstance(item, dict)
             ]
             raise ValueError(
-                "Research returned no structured verified facts. "
-                f"Received entries={len(report.verified_facts)}, "
-                f"sample_shapes={samples}, "
+                "Research produced no verified claims; no drafts were generated. "
+                f"Research notes={research_notes}, "
                 f"unverified_claims={len(report.unverified_claims)}, "
-                f"sources={len(report.sources)}. "
-                "No content drafts were generated."
+                f"sources={len(report.sources)}."
             )
 
         print("Generating carousel...")

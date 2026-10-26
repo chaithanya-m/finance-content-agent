@@ -1,5 +1,3 @@
-import json
-import os
 import re
 import urllib.error
 import urllib.request
@@ -15,29 +13,40 @@ from .source_ingestion import create_evidence_record, create_source_document
 
 class _PageTextParser(HTMLParser):
     IGNORED = {
-        "script", "style", "noscript", "nav", "header", "footer",
-        "aside", "form", "svg",
+        "script", "style", "noscript", "svg", "nav", "header",
+        "footer", "aside",
+    }
+    RECOVERY_TAGS = {"body", "main", "article"}
+    BLOCK_TAGS = {
+        "p", "br", "div", "li", "h1", "h2", "h3",
+        "table", "tr", "section",
     }
 
     def __init__(self):
-        super().__init__()
-        self.ignored_depth = 0
+        super().__init__(convert_charrefs=True)
+        self.ignored_tags = []
         self.parts = []
 
     def handle_starttag(self, tag, attrs):
+        if tag in self.RECOVERY_TAGS and self.ignored_tags:
+            self.ignored_tags.clear()
+
         if tag in self.IGNORED:
-            self.ignored_depth += 1
-        elif not self.ignored_depth and tag in {"p", "br", "div", "li", "h1", "h2", "h3"}:
-            self.parts.append(" ")
+            self.ignored_tags.append(tag)
+        elif not self.ignored_tags and tag in self.BLOCK_TAGS:
+            self.parts.append("\n")
 
     def handle_endtag(self, tag):
-        if tag in self.IGNORED and self.ignored_depth:
-            self.ignored_depth -= 1
-        elif not self.ignored_depth and tag in {"p", "div", "li", "h1", "h2", "h3"}:
-            self.parts.append(" ")
+        if tag in self.IGNORED:
+            for index in range(len(self.ignored_tags) - 1, -1, -1):
+                if self.ignored_tags[index] == tag:
+                    del self.ignored_tags[index:]
+                    break
+        elif not self.ignored_tags and tag in self.BLOCK_TAGS:
+            self.parts.append("\n")
 
     def handle_data(self, data):
-        if not self.ignored_depth:
+        if not self.ignored_tags:
             self.parts.append(data)
 
 
@@ -45,13 +54,86 @@ def _normalize(text):
     return re.sub(r"\s+", " ", text).strip().casefold()
 
 
+_STOPWORDS = {
+    "the", "and", "for", "with", "from", "into", "that", "this",
+    "does", "how", "what", "when", "where", "why", "about", "using",
+    "india", "indian", "affect", "affects", "explain",
+}
+
+
+def _topic_terms(topic: str) -> set[str]:
+    return {
+        term
+        for term in re.findall(r"[a-z]+", topic.casefold())
+        if len(term) > 2 and term not in _STOPWORDS
+    }
+
+
+def _source_statements(content: str) -> list[str]:
+    lines = [
+        re.sub(r"\s+", " ", line).strip()
+        for line in content.splitlines()
+        if line.strip()
+    ]
+    statements = []
+    for start in range(len(lines)):
+        for end in range(start + 1, min(start + 5, len(lines)) + 1):
+            statement = " ".join(lines[start:end])
+            if len(statement) > 500:
+                break
+            if len(statement) >= 15:
+                for part in re.split(
+                    r"(?<=[.!?])\s+(?=[A-Z0-9])",
+                    statement,
+                ):
+                    part = part.strip()
+                    if re.search(r"\b[A-Za-z]+\s+\d+\[", part):
+                        continue
+                    has_number = bool(re.search(r"\d", part))
+                    is_complete_sentence = (
+                        len(part) >= 40 and part.endswith((".", "?", "!"))
+                    )
+                    if (
+                        20 <= len(part) <= 500
+                        and (has_number or is_complete_sentence)
+                    ):
+                        statements.append(part)
+    return list(dict.fromkeys(statements))
+
+
+def _relevant_statements(content: str, topic: str) -> list[str]:
+    terms = _topic_terms(topic)
+    if not terms:
+        return []
+
+    ranked = []
+    for statement in _source_statements(content):
+        words = re.findall(r"[a-z]+", statement.casefold())
+        statement_terms = set(words)
+        matched = terms & statement_terms
+        required_matches = 1 if len(terms) == 1 else 2
+        if len(matched) >= required_matches:
+            first_number = re.search(r"\d", statement)
+            if first_number:
+                matched_positions = [
+                    index
+                    for index, word in enumerate(words)
+                    if word in matched
+                ]
+                number_position = len(
+                    re.findall(r"[a-z]+", statement[:first_number.start()].casefold())
+                )
+                if not matched_positions or max(matched_positions) >= number_position:
+                    continue
+            ranked.append((len(matched), len(statement), statement))
+
+    ranked.sort(key=lambda item: (-item[0], item[1]))
+    return list(dict.fromkeys(statement for _, _, statement in ranked))
+
+
 class LocalResearchAgent(ResearchAgent):
     def __init__(self):
         self.discovery = ResearchSourceDiscovery()
-        self.ollama_url = os.getenv(
-            "OLLAMA_BASE_URL", "http://127.0.0.1:11434"
-        ).rstrip("/")
-        self.model = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:3b")
 
     def _fetch_page(self, candidate):
         request = urllib.request.Request(
@@ -70,13 +152,17 @@ class LocalResearchAgent(ResearchAgent):
 
         parser = _PageTextParser()
         parser.feed(raw)
-        text = re.sub(r"\s+", " ", " ".join(parser.parts)).strip()
+        text = "\n".join(
+            re.sub(r"[ \t]+", " ", line).strip()
+            for line in "".join(parser.parts).splitlines()
+            if line.strip()
+        )
 
         if len(text) < 400:
             return None
 
         candidate.source_url = final_url
-        return text[:6000]
+        return text[:12000]
 
     def research(self, request: ResearchRequest) -> ResearchReport:
         report = ResearchReport(
@@ -85,13 +171,21 @@ class LocalResearchAgent(ResearchAgent):
         )
 
         candidates = self.discovery.discover(request)
+        if not candidates:
+            report.unverified_claims.append({
+                "fact": "No curated sources are configured for this topic.",
+                "status": "unverified",
+                "evidence": [],
+                "notes": "Add an authoritative source mapping before generating drafts.",
+            })
+            return report
+
         pages = []
 
         for candidate in candidates:
             content = self._fetch_page(candidate)
             if content:
                 pages.append({
-                    "source_id": f"S{len(pages) + 1}",
                     "candidate": candidate,
                     "content": content,
                 })
@@ -103,83 +197,17 @@ class LocalResearchAgent(ResearchAgent):
                 "fact": "No usable source pages were retrieved.",
                 "status": "unverified",
                 "evidence": [],
-                "notes": "Check search connectivity and source accessibility.",
+                "notes": "All configured sources were unavailable or returned unusable content.",
             })
             return report
 
-        source_material = [
-            {
-                "source_id": page["source_id"],
-                "url": page["candidate"].source_url,
-                "title": page["candidate"].title,
-                "text": page["content"],
-            }
-            for page in pages
-        ]
-
-        prompt = f"""
-Extract candidate finance facts from the source material below.
-
-Question: {request.research_question}
-Topic: {request.topic}
-
-Rules:
-- Use only the supplied source text.
-- Each claim must be directly supported by its named source.
-- Prefer claims stated explicitly in the source; do not infer advice or causation.
-- evidence_text must be a verbatim, contiguous quotation copied from that source.
-- Keep each quotation long enough to preserve the meaning, usually one full sentence.
-- Use the source_id, not an invented URL.
-- Do not invent figures, dates, rates, source text, or publication dates.
-- Return {"claims": [{"claim": "...", "source_id": "S1", "evidence_text": "verbatim quote"}]}.
-- If the sources do not support a useful claim, return an empty claims array.
-
-SOURCE MATERIAL:
-{json.dumps(source_material, ensure_ascii=False)}
-"""
-        payload = {
-            "model": self.model,
-            "prompt": prompt,
-            "stream": False,
-            "format": "json",
-            "options": {"temperature": 0.1, "num_ctx": 16384},
-        }
-        http_request = urllib.request.Request(
-            f"{self.ollama_url}/api/generate",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-
-        try:
-            with urllib.request.urlopen(http_request, timeout=240) as response:
-                model_response = json.loads(response.read().decode("utf-8"))
-            extraction = json.loads(model_response.get("response", "{}"))
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
-            raise RuntimeError(f"Local claim extraction failed: {exc}") from exc
-
-        pages_by_id = {page["source_id"]: page for page in pages}
         evidence_by_claim = {}
-        source_urls = set()
-
-        for item in extraction.get("claims", []):
-            if not isinstance(item, dict):
-                continue
-            claim_text = item.get("claim")
-            source_id = item.get("source_id")
-            quote = item.get("evidence_text")
-
-            if not all(isinstance(value, str) for value in (claim_text, source_id, quote)):
-                continue
-            page = pages_by_id.get(source_id)
-            if not page or len(claim_text.strip()) < 15 or len(quote.strip()) < 35:
-                continue
-
-            # The alleged quotation must actually appear in the fetched page.
-            if _normalize(quote) not in _normalize(page["content"]):
-                continue
-
+        for page in pages:
             candidate = page["candidate"]
+            statements = _relevant_statements(
+                page["content"],
+                request.topic,
+            )
             source = create_source_document(
                 source_name=candidate.source_name,
                 source_url=candidate.source_url,
@@ -188,13 +216,13 @@ SOURCE MATERIAL:
                 source_type=candidate.source_type,
                 published_at=candidate.published_at,
             )
-            record = create_evidence_record(
-                claim=claim_text.strip(),
-                source=source,
-                supporting_text=quote.strip(),
-            )
-            evidence_by_claim.setdefault(claim_text.strip(), []).append(record)
-            source_urls.add(candidate.source_url)
+            for statement in statements[:3]:
+                record = create_evidence_record(
+                    claim=statement,
+                    source=source,
+                    supporting_text=statement,
+                )
+                evidence_by_claim.setdefault(statement, []).append(record)
 
         claims = list(evidence_by_claim)
         report = build_research_report(
@@ -203,6 +231,13 @@ SOURCE MATERIAL:
             claims=claims,
             evidence_by_claim=evidence_by_claim,
         )
+        if not claims:
+            report.unverified_claims.append({
+                "fact": "No source statements directly matched the topic.",
+                "status": "unverified",
+                "evidence": [],
+                "notes": "The retrieved pages did not contain suitable verbatim claims.",
+            })
 
         # Keep every successfully fetched source for audit and review.
         existing = {source.get("source_url") for source in report.sources}
@@ -216,12 +251,15 @@ SOURCE MATERIAL:
                 })
                 existing.add(candidate.source_url)
 
-        report.important_numbers = sorted({
+        numbers = {
             number
             for fact in report.verified_facts
             for number in re.findall(
-                r"(?<!\\w)\\d[\\d,]*(?:\\.\\d+)?%?",
+                r"(?<!\w)\d[\d,]*(?:\.\d+)?%?",
                 fact["fact"],
             )
-        })
+        }
+        report.important_numbers = [
+            {"number": number} for number in sorted(numbers)
+        ]
         return report
