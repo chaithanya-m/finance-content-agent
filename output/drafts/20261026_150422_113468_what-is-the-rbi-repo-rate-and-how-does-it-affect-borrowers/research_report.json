@@ -1,0 +1,98 @@
+{
+  "topic": "What is the RBI repo rate and how does it affect borrowers?",
+  "research_question": "Explain the repo rate and its relationship with borrowing costs using official sources. Research current information using authoritative Indian sources. Preserve source URLs and supporting evidence. Do not mark a claim verified unless the finance-research verification tool returns status 'verified'.",
+  "verified_facts": [
+    {
+      "fact": "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both.",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+          "evidence_text": "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both.",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    },
+    {
+      "fact": "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan.",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+          "evidence_text": "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan.",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    },
+    {
+      "fact": "Policy Repo Rate : 5.50%",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://rbi.org.in/",
+          "evidence_text": "Policy Repo Rate : 5.50%",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    },
+    {
+      "fact": "Fixed Reverse Repo Rate : 3.35%",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://rbi.org.in/",
+          "evidence_text": "Fixed Reverse Repo Rate : 3.35%",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    },
+    {
+      "fact": "Policy Rates Policy Repo Rate : 5.50%",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://rbi.org.in/",
+          "evidence_text": "Policy Rates Policy Repo Rate : 5.50%",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    }
+  ],
+  "important_numbers": [
+    {
+      "number": "3.35%"
+    },
+    {
+      "number": "5.50%"
+    }
+  ],
+  "analysis": [],
+  "unverified_claims": [],
+  "sources": [
+    {
+      "source_name": "Reserve Bank of India",
+      "source_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+      "published_at": null
+    },
+    {
+      "source_name": "Reserve Bank of India",
+      "source_url": "https://rbi.org.in/",
+      "published_at": null
+    }
+  ]
+}

@@ -2,243 +2,119 @@ import re
 
 from .claim import Claim, Evidence
 from .evidence import EvidenceRecord
+from .evidence_resolution import (
+    EvidenceWithAuthority,
+    is_verifiable_authority,
+    resolve_evidence,
+)
+from .source_rules import classify_source
 
 
 def _normalize(text: str) -> str:
-    return re.sub(r"\s+", " ", text.lower()).strip()
+    return re.sub(r"\s+", " ", text).strip().casefold()
 
 
-def _extract_numbers(text: str) -> set[str]:
-    text = re.sub(r"(\d+(?:\.\d+)?)\s*(?:per\s*cent|percent)", r"\1%", text.lower())
-
-    return set(
-        re.findall(r"\d+(?:\.\d+)?%?", text)
-    )
-
-def verify_claim(claim: Claim, evidence: EvidenceRecord) -> Claim:
+def _quoted_verbatim(claim: Claim, evidence: EvidenceRecord) -> bool:
     claim_text = _normalize(claim.claim)
     evidence_text = _normalize(evidence.supporting_text)
+    return bool(claim_text) and claim_text == evidence_text
 
-    claim_numbers = _extract_numbers(claim_text)
-    evidence_numbers = _extract_numbers(evidence_text)
 
-    numbers_match = claim_numbers.issubset(evidence_numbers)
+def _resolve_exact_evidence(
+    claim: Claim,
+    evidence_records: list[EvidenceRecord],
+) -> bool:
+    matching = []
+    for record in evidence_records:
+        if not _quoted_verbatim(claim, record):
+            continue
+        source = classify_source(
+            record.source.source_name,
+            record.source.source_type,
+            record.source.source_url,
+        )
+        matching.append(
+            EvidenceWithAuthority(
+                value=record.supporting_text,
+                source=source,
+                relation="supporting",
+            )
+        )
 
-    keywords = {
-        "repo",
-        "rate",
-        "policy",
-        "rbi",
-        "inflation",
-        "gdp",
-        "tax",
-        "income",
-        "interest",
-        "market",
-    }
+    resolved = resolve_evidence(matching)
+    return bool(
+        resolved and is_verifiable_authority(resolved.source.authority_level)
+    )
 
-    claim_keywords = {
-        word for word in claim_text.split()
-        if word in keywords
-    }
 
-    evidence_keywords = {
-        word for word in evidence_text.split()
-        if word in keywords
-    }
-
-    keyword_match = bool(claim_keywords & evidence_keywords)
-
+def verify_claim(claim: Claim, evidence: EvidenceRecord) -> Claim:
+    supports = _quoted_verbatim(claim, evidence)
     claim.evidence.append(
         Evidence(
             source_name=evidence.source.source_name,
             source_url=evidence.source.source_url,
             evidence_text=evidence.supporting_text,
+            support="supporting" if supports else "not_relevant",
             published_at=evidence.source.published_at,
         )
     )
 
-    if numbers_match and keyword_match:
+    if supports and _resolve_exact_evidence(claim, [evidence]):
         claim.status = "verified"
-        claim.notes = (
-            "Claim is supported by matching numeric values "
-            "and relevant factual terminology."
-        )
+        claim.notes = "Claim appears verbatim in an authoritative source quotation."
     else:
         claim.status = "unverified"
-        claim.notes = (
-            "The supplied evidence does not sufficiently support "
-            "the claim's numeric values and terminology."
-        )
+        claim.notes = "No authoritative source quotation contains the claim verbatim."
 
     return claim
+
 
 def detect_conflict(
     claim: Claim,
     evidence_records: list[EvidenceRecord],
 ) -> Claim:
-    claim_numbers = _extract_numbers(claim.claim)
-
-    if not claim_numbers:
-        claim.status = "unverified"
-        claim.notes = "Claim does not contain a numeric value to compare."
-        return claim
-
-    claimed_value = next(iter(claim_numbers))
-
-    matching_evidence = []
-
-    for record in evidence_records:
-        evidence_text = _normalize(record.supporting_text)
-
-        if claimed_value in evidence_text:
-            matching_evidence.append(record)
-
-    if len(matching_evidence) == len(evidence_records):
+    if _resolve_exact_evidence(claim, evidence_records):
         claim.status = "verified"
-        claim.notes = (
-            "All supplied evidence records contain the claimed value."
-        )
-        return claim
-
-    if matching_evidence:
-        claim.status = "conflicting"
-        claim.notes = (
-            "Some evidence supports the claimed value while other "
-            "evidence does not."
-        )
+        claim.notes = "Claim appears verbatim in an authoritative source quotation."
         return claim
 
     claim.status = "unverified"
-    claim.notes = (
-        "None of the supplied evidence records contain the claimed value."
-    )
+    claim.notes = "No authoritative source quotation contains the claim verbatim."
 
     return claim
+
 
 def evidence_supports_claim(
     claim: Claim,
     evidence: EvidenceRecord,
 ) -> bool:
-    claim_text = _normalize(claim.claim)
-    evidence_text = _normalize(evidence.supporting_text)
+    return _quoted_verbatim(claim, evidence)
 
-    claim_numbers = _extract_numbers(claim_text)
-    evidence_numbers = _extract_numbers(evidence_text)
-
-    numbers_match = claim_numbers.issubset(evidence_numbers)
-
-    keywords = {
-        "repo",
-        "rate",
-        "policy",
-        "rbi",
-        "inflation",
-        "gdp",
-        "tax",
-        "income",
-        "interest",
-        "market",
-    }
-
-    claim_keywords = {
-        word for word in claim_text.split()
-        if word in keywords
-    }
-
-    evidence_keywords = {
-        word for word in evidence_text.split()
-        if word in keywords
-    }
-
-    keyword_match = bool(claim_keywords & evidence_keywords)
-
-    return numbers_match and keyword_match
 
 def evidence_relation(
     claim: Claim,
     evidence: EvidenceRecord,
 ) -> str:
+    if _quoted_verbatim(claim, evidence):
+        return "supporting"
+
     claim_text = _normalize(claim.claim)
     evidence_text = _normalize(evidence.supporting_text)
+    claim_numbers = re.findall(r"\d+(?:\.\d+)?%?", claim_text)
+    evidence_numbers = re.findall(r"\d+(?:\.\d+)?%?", evidence_text)
+    claim_without_numbers = re.sub(r"\d+(?:\.\d+)?%?", "<number>", claim_text)
+    evidence_without_numbers = re.sub(
+        r"\d+(?:\.\d+)?%?",
+        "<number>",
+        evidence_text,
+    )
 
-    # Numerical claims must match the supplied source evidence.
-    claim_numbers = {
-        number.rstrip("%")
-        for number in _extract_numbers(claim_text)
-    }
-    evidence_numbers = {
-        number.rstrip("%")
-        for number in _extract_numbers(evidence_text)
-    }
-
-    if not claim_numbers.issubset(evidence_numbers):
-        return "not_relevant"
-
-    # Normalize common variations before comparing terminology.
-    aliases = {
-        "rates": "rate",
-        "loans": "loan",
-        "emis": "emi",
-        "affects": "affect",
-        "affecting": "affect",
-        "increases": "increase",
-        "increased": "increase",
-        "increasing": "increase",
-        "rises": "rise",
-        "rising": "rise",
-        "reduces": "reduce",
-        "reduced": "reduce",
-        "reducing": "reduce",
-        "falls": "fall",
-        "falling": "fall",
-        "payments": "payment",
-        "installments": "installment",
-        "instalments": "installment",
-    }
-
-    stopwords = {
-        "the", "a", "an", "and", "or", "to", "of", "in", "on",
-        "at", "as", "by", "for", "is", "are", "was", "were",
-        "be", "been", "being", "it", "this", "that", "these",
-        "those", "with", "from", "than", "then", "they", "their",
-        "can", "could", "will", "may", "should", "does", "do",
-        "how", "what", "why", "when",
-    }
-
-    def terms(text: str) -> set[str]:
-        words = re.findall(r"[a-z]+", text.lower())
-        return {
-            aliases.get(word, word)
-            for word in words
-            if word not in stopwords and len(word) > 1
-        }
-
-    claim_terms = terms(claim_text)
-    evidence_terms = terms(evidence_text)
-    overlap = claim_terms & evidence_terms
-
-    # Require meaningful overlap, not merely a shared generic word.
     if (
-        len(overlap) < 2
-        or not claim_terms
-        or len(overlap) / len(claim_terms) < 0.4
+        claim_numbers
+        and evidence_numbers
+        and claim_numbers != evidence_numbers
+        and claim_without_numbers == evidence_without_numbers
     ):
-        return "not_relevant"
+        return "contradicting"
 
-    # Do not accept an obvious opposite direction as supporting evidence.
-    upward = {"increase", "rise", "higher", "raise", "grow", "growth", "up"}
-    downward = {"decrease", "fall", "lower", "reduce", "drop", "decline", "down"}
-
-    claim_up = claim_terms & upward
-    claim_down = claim_terms & downward
-    evidence_up = evidence_terms & upward
-    evidence_down = evidence_terms & downward
-
-    if claim_up and evidence_down and not evidence_up:
-        return "not_relevant"
-
-    if claim_down and evidence_up and not evidence_down:
-        return "not_relevant"
-
-    return "supporting"
+    return "not_relevant"

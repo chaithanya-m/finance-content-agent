@@ -1,0 +1,61 @@
+{
+  "topic": "What is the RBI repo rate and how does it affect borrowers?",
+  "format": "short-form vertical video script",
+  "aspect_ratio": "9:16",
+  "estimated_duration_seconds": 26,
+  "scenes": [
+    {
+      "scene": 1,
+      "duration_seconds": 3,
+      "visual_direction": "Vertical 9:16 opening card with readable typography and a simple finance-themed visual.",
+      "on_screen_text": "What is the RBI repo rate and how does it affect borrowers?",
+      "voiceover": "What is the RBI repo rate and how does it affect borrowers?"
+    },
+    {
+      "scene": 2,
+      "duration_seconds": 5,
+      "visual_direction": "Show the supplied text with clean typography and simple supporting visuals. Do not add statistics or facts that are not in the supplied text.",
+      "on_screen_text": "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both.",
+      "voiceover": "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both."
+    },
+    {
+      "scene": 3,
+      "duration_seconds": 5,
+      "visual_direction": "Show the supplied text with clean typography and simple supporting visuals. Do not add statistics or facts that are not in the supplied text.",
+      "on_screen_text": "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan.",
+      "voiceover": "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan."
+    },
+    {
+      "scene": 4,
+      "duration_seconds": 5,
+      "visual_direction": "Show the supplied text with clean typography and simple supporting visuals. Do not add statistics or facts that are not in the supplied text.",
+      "on_screen_text": "Policy Repo Rate : 5.50%",
+      "voiceover": "Policy Repo Rate : 5.50%"
+    },
+    {
+      "scene": 5,
+      "duration_seconds": 5,
+      "visual_direction": "Show the supplied text with clean typography and simple supporting visuals. Do not add statistics or facts that are not in the supplied text.",
+      "on_screen_text": "Fixed Reverse Repo Rate : 3.35%",
+      "voiceover": "Fixed Reverse Repo Rate : 3.35%"
+    },
+    {
+      "scene": 6,
+      "duration_seconds": 3,
+      "visual_direction": "Show a simple closing card and call to action.",
+      "on_screen_text": "Review the cited sources before sharing.",
+      "voiceover": "Review the cited sources before sharing."
+    }
+  ],
+  "caption": "Educational content only; this is not personalized financial advice.",
+  "sources": [
+    "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+    "https://rbi.org.in/"
+  ],
+  "claims": [
+    "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both.",
+    "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan.",
+    "Policy Repo Rate : 5.50%",
+    "Fixed Reverse Repo Rate : 3.35%"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "topic": "How do interest rates affect home loan EMIs in India?",
+  "research_question": "Explain how interest rates affect monthly home-loan EMI and total repayment. Research current information using authoritative Indian sources. Preserve source URLs and supporting evidence. Do not mark a claim verified unless the finance-research verification tool returns status 'verified'.",
+  "verified_facts": [
+    {
+      "fact": "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan.",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+          "evidence_text": "REs shall share / make accessible to the borrowers, through appropriate channels, a statement at the end of each quarter which shall at the minimum, enumerate the principal and interest recovered till date, EMI amount, number of EMIs left and annualized rate of interest / Annual Percentage Rate (APR) for the entire tenor of the loan.",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    },
+    {
+      "fact": "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both.",
+      "status": "verified",
+      "evidence": [
+        {
+          "source_name": "Reserve Bank of India",
+          "source_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+          "evidence_text": "At the time of sanction, REs shall clearly communicate to the borrowers about the possible impact of change in benchmark interest rate on the loan leading to changes in EMI and/or tenor or both.",
+          "support": "supporting",
+          "published_at": null
+        }
+      ],
+      "notes": "Claim resolved using Reserve Bank of India (high authority)."
+    }
+  ],
+  "important_numbers": [],
+  "analysis": [],
+  "unverified_claims": [],
+  "sources": [
+    {
+      "source_name": "Reserve Bank of India",
+      "source_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12529",
+      "published_at": null
+    },
+    {
+      "source_name": "Reserve Bank of India",
+      "source_url": "https://rbi.org.in/Scripts/NotificationUser.aspx?Id=12655&Mode=0",
+      "published_at": null
+    }
+  ]
+}

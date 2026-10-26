@@ -4,6 +4,7 @@ import urllib.error
 import urllib.request
 
 from .content_post import InstagramPost
+from .content_validator import ContentValidator
 from .research.research_report import ResearchReport
 
 
@@ -30,50 +31,37 @@ class ResearchContentGenerator:
                 "Cannot generate content without verified facts."
             )
 
+        facts = [fact["fact"] for fact in verified_facts]
+        source_urls = [
+            source["source_url"]
+            for source in report.sources
+            if isinstance(source, dict)
+            and isinstance(source.get("source_url"), str)
+        ]
         prompt = f"""
-Create an educational Instagram carousel about an Indian finance topic.
+Create an Instagram carousel for an Indian finance topic.
+Return only one JSON object with exactly these fields:
+{{
+  "topic": {json.dumps(report.topic, ensure_ascii=False)},
+  "hook": {json.dumps(ContentValidator.hook_for_topic(report.topic), ensure_ascii=False)},
+  "slides": ["exact verified fact copied verbatim"],
+  "caption": {json.dumps(ContentValidator.SAFE_CAPTION)},
+  "call_to_action": {json.dumps(ContentValidator.SAFE_CALL_TO_ACTION)},
+  "sources": {json.dumps(source_urls, ensure_ascii=False)},
+  "claims": ["same exact verified facts used as slide text"]
+}}
 
-TOPIC:
-{report.topic}
-
-RESEARCH QUESTION:
-{report.research_question}
-
-VERIFIED FACTS:
-{json.dumps(verified_facts, ensure_ascii=False, indent=2)}
-
-IMPORTANT NUMBERS:
-{json.dumps(report.important_numbers, ensure_ascii=False, indent=2)}
-
-ANALYSIS:
-{json.dumps(report.analysis, ensure_ascii=False, indent=2)}
-
-SOURCES:
-{json.dumps(report.sources, ensure_ascii=False, indent=2)}
+Verified facts, the only statements allowed on slides:
+{json.dumps(facts, ensure_ascii=False)}
 
 Rules:
-1. Use only the verified facts supplied above.
-2. Never invent financial claims, statistics, dates or rates.
-3. Do not give personalized financial advice or guarantee outcomes.
-4. Write clearly for young professionals in India.
-5. Keep carousel slides concise and useful.
-6. Do not mention unverified or conflicting claims.
-7. Use only the supplied source URLs.
-8. Every factual statement must be included in the claims array.
-9. The claims array must contain only exact statements from VERIFIED FACTS.
-10. Do not introduce new factual claims through the caption or call to action.
-11. Preserve financial numbers exactly as supported by the verified facts.
-
-Return a JSON object with exactly these fields:
-{{
-  "topic": "string",
-  "hook": "string",
-  "slides": ["slide 1", "slide 2", "slide 3"],
-  "caption": "string",
-  "call_to_action": "string",
-  "sources": ["https://..."],
-  "claims": ["exact verified statement"]
-}}
+- Copy each slide exactly from one verified fact. Do not paraphrase, shorten,
+  explain, add headings, or add any other slide text.
+- The claims array must contain the exact same statements in the same order
+  as the slides.
+- Do not add facts, numbers, dates, predictions, advice, or financial claims.
+- Keep the caption and call_to_action exactly as supplied in the JSON template.
+- Use only the listed source URLs.
 """
 
         payload = {
@@ -107,8 +95,17 @@ Return a JSON object with exactly these fields:
             raise RuntimeError(
                 "Ollama content generation timed out after 240 seconds."
             ) from exc
+        except json.JSONDecodeError as exc:
+            raise ValueError("Ollama returned invalid API JSON.") from exc
 
-        text = result.get("response", "").strip()
+        if not isinstance(result, dict):
+            raise ValueError("Ollama returned an invalid API response.")
+
+        response_text = result.get("response")
+        if not isinstance(response_text, str):
+            raise ValueError("Ollama response is missing generated text.")
+
+        text = response_text.strip()
         if not text:
             raise ValueError("Ollama returned an empty content response.")
 
@@ -118,6 +115,9 @@ Return a JSON object with exactly these fields:
             raise ValueError(
                 f"Ollama returned invalid JSON: {text[:300]}"
             ) from exc
+
+        if not isinstance(data, dict):
+            raise ValueError("Generated content must be a JSON object.")
 
         required_fields = {
             "topic",
@@ -135,10 +135,19 @@ Return a JSON object with exactly these fields:
                 f"{sorted(missing_fields)}"
             )
 
-        for field in ("slides", "sources", "claims"):
-            if not isinstance(data[field], list):
+        for field in ("topic", "hook", "caption", "call_to_action"):
+            if not isinstance(data[field], str) or not data[field].strip():
                 raise ValueError(
-                    f"Generated content field '{field}' must be a list."
+                    f"Generated content field '{field}' must be a non-empty string."
+                )
+
+        for field in ("slides", "sources", "claims"):
+            if not isinstance(data[field], list) or not all(
+                isinstance(item, str) and item.strip()
+                for item in data[field]
+            ):
+                raise ValueError(
+                    f"Generated content field '{field}' must be a list of non-empty strings."
                 )
 
         return InstagramPost(
