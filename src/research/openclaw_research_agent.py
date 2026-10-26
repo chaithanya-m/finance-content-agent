@@ -1,5 +1,6 @@
 import json
 import subprocess
+import uuid
 
 from .research_agent import ResearchAgent
 from .research_report import ResearchReport
@@ -33,6 +34,27 @@ STEP 3 — CLASSIFY
 - Preserve source URLs and evidence for verified claims.
 - Important numbers must come from researched evidence.
 
+FACT OBJECT SCHEMA:
+Every verified_facts item MUST be a JSON object containing:
+{{
+  "fact": "the exact researched claim",
+  "status": "verified",
+  "evidence": [
+    {{
+      "source_name": "official source name",
+      "source_url": "https://...",
+      "support": "supporting",
+      "evidence_text": "relevant source text",
+      "published_at": null
+    }}
+  ],
+  "notes": "verification result notes"
+}}
+Use the exact key "fact", not "claim".
+Copy status and evidence from the verify_claims tool result; never invent them.
+If no claim is verified by the tool, return an empty verified_facts array.
+Do not turn an unverified result into a verified fact.
+
 STEP 4 — OUTPUT
 Return ONLY valid JSON.
 Do NOT use Markdown.
@@ -54,6 +76,8 @@ Return exactly this structure:
 If verify_claims cannot be successfully called, return an empty verified_facts array rather than guessing.
 """
 
+        session_key = f"finance-research-{uuid.uuid4().hex[:12]}"
+
         def run_agent(agent_prompt: str) -> str:
             result = subprocess.run(
                 [
@@ -61,7 +85,7 @@ If verify_claims cannot be successfully called, return an empty verified_facts a
                     "agent",
                     "--json",
                     "--session-key",
-                    "finance-research-rbi-repo-rate",
+                    session_key,
                     "--message",
                     agent_prompt,
                 ],

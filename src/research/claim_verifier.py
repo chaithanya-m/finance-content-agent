@@ -162,55 +162,83 @@ def evidence_relation(
     claim_text = _normalize(claim.claim)
     evidence_text = _normalize(evidence.supporting_text)
 
-    claim_numbers = _extract_numbers(claim_text)
-
-    keywords = {
-        "repo",
-        "rate",
-        "policy",
-        "rbi",
-        "inflation",
-        "gdp",
-        "tax",
-        "income",
-        "interest",
-        "market",
-    }
-
-    claim_keywords = {
-        word for word in claim_text.split()
-        if word in keywords
-    }
-
-    evidence_keywords = {
-        word for word in evidence_text.split()
-        if word in keywords
-    }
-
-    keyword_match = bool(claim_keywords & evidence_keywords)
-
-    if not keyword_match:
-        return "not_relevant"
-
-    if not claim_numbers:
-        return "not_relevant"
-
-    # A source may contain historical or unrelated numbers.
-    # Only treat it as supporting when the claimed value appears
-    # directly in the evidence text.
-    normalized_claim_numbers = {
+    # Numerical claims must match the supplied source evidence.
+    claim_numbers = {
         number.rstrip("%")
-        for number in claim_numbers
+        for number in _extract_numbers(claim_text)
     }
-
-    normalized_evidence_numbers = {
+    evidence_numbers = {
         number.rstrip("%")
         for number in _extract_numbers(evidence_text)
     }
 
-    if normalized_claim_numbers.issubset(normalized_evidence_numbers):
-        return "supporting"
+    if not claim_numbers.issubset(evidence_numbers):
+        return "not_relevant"
 
-    # Do not automatically classify missing numbers as contradictory.
-    # The evidence may contain multiple periods, rates, or table values.
-    return "not_relevant"
+    # Normalize common variations before comparing terminology.
+    aliases = {
+        "rates": "rate",
+        "loans": "loan",
+        "emis": "emi",
+        "affects": "affect",
+        "affecting": "affect",
+        "increases": "increase",
+        "increased": "increase",
+        "increasing": "increase",
+        "rises": "rise",
+        "rising": "rise",
+        "reduces": "reduce",
+        "reduced": "reduce",
+        "reducing": "reduce",
+        "falls": "fall",
+        "falling": "fall",
+        "payments": "payment",
+        "installments": "installment",
+        "instalments": "installment",
+    }
+
+    stopwords = {
+        "the", "a", "an", "and", "or", "to", "of", "in", "on",
+        "at", "as", "by", "for", "is", "are", "was", "were",
+        "be", "been", "being", "it", "this", "that", "these",
+        "those", "with", "from", "than", "then", "they", "their",
+        "can", "could", "will", "may", "should", "does", "do",
+        "how", "what", "why", "when",
+    }
+
+    def terms(text: str) -> set[str]:
+        words = re.findall(r"[a-z]+", text.lower())
+        return {
+            aliases.get(word, word)
+            for word in words
+            if word not in stopwords and len(word) > 1
+        }
+
+    claim_terms = terms(claim_text)
+    evidence_terms = terms(evidence_text)
+    overlap = claim_terms & evidence_terms
+
+    # Require meaningful overlap, not merely a shared generic word.
+    if (
+        len(overlap) < 2
+        or not claim_terms
+        or len(overlap) / len(claim_terms) < 0.4
+    ):
+        return "not_relevant"
+
+    # Do not accept an obvious opposite direction as supporting evidence.
+    upward = {"increase", "rise", "higher", "raise", "grow", "growth", "up"}
+    downward = {"decrease", "fall", "lower", "reduce", "drop", "decline", "down"}
+
+    claim_up = claim_terms & upward
+    claim_down = claim_terms & downward
+    evidence_up = evidence_terms & upward
+    evidence_down = evidence_terms & downward
+
+    if claim_up and evidence_down and not evidence_up:
+        return "not_relevant"
+
+    if claim_down and evidence_up and not evidence_down:
+        return "not_relevant"
+
+    return "supporting"

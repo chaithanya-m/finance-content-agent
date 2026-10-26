@@ -1,0 +1,44 @@
+[
+  {
+    "title": "How do interest rates affect home loan EMIs in India?",
+    "reason": "Explain how interest rates affect monthly home-loan EMI and total repayment.",
+    "content_type": "carousel",
+    "priority": "high"
+  },
+  {
+    "title": "What is the RBI repo rate and how does it affect borrowers?",
+    "reason": "Explain the repo rate and its relationship with borrowing costs using official sources.",
+    "content_type": "carousel",
+    "priority": "high"
+  },
+  {
+    "title": "How does inflation affect household budgets in India?",
+    "reason": "Explain inflation and purchasing power using reliable Indian sources.",
+    "content_type": "carousel",
+    "priority": "high"
+  },
+  {
+    "title": "Fixed versus floating home loan rates",
+    "reason": "Explain the differences between fixed and floating interest rates for Indian borrowers.",
+    "content_type": "carousel",
+    "priority": "medium"
+  },
+  {
+    "title": "How does compounding work in long-term savings?",
+    "reason": "Explain compound growth with clearly labelled, sourced financial examples.",
+    "content_type": "carousel",
+    "priority": "medium"
+  },
+  {
+    "title": "How does a credit score affect loan eligibility in India?",
+    "reason": "Explain credit scores and loan eligibility using reliable Indian sources.",
+    "content_type": "carousel",
+    "priority": "medium"
+  },
+  {
+    "title": "What is the difference between direct and indirect taxes in India?",
+    "reason": "Explain the distinction between direct and indirect taxes using official sources.",
+    "content_type": "carousel",
+    "priority": "medium"
+  }
+]

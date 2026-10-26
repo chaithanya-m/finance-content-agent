@@ -10,6 +10,7 @@ def add_source_authority(
     authority = classify_source(
         record.source.source_name,
         record.source.source_type,
+        record.source.source_url,
     )
 
     return EvidenceWithAuthority(

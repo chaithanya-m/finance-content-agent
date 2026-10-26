@@ -1,117 +1,123 @@
 import json
-import subprocess
+import os
+import urllib.error
+import urllib.request
 
 from .content_post import InstagramPost
 from .research.research_report import ResearchReport
 
 
 class ResearchContentGenerator:
-    def generate(self, report: ResearchReport) -> InstagramPost:
-        if not report.verified_facts:
-            raise ValueError("Cannot generate content without verified facts.")
+    def __init__(self) -> None:
+        self.base_url = os.getenv(
+            "OLLAMA_BASE_URL", "http://127.0.0.1:11434"
+        ).rstrip("/")
+        self.model = os.getenv(
+            "OLLAMA_MODEL", "qwen2.5-coder:3b"
+        )
 
+    def generate(self, report: ResearchReport) -> InstagramPost:
         verified_facts = [
             fact
             for fact in report.verified_facts
-            if fact.get("status") == "verified"
+            if isinstance(fact, dict)
+            and fact.get("status") == "verified"
+            and isinstance(fact.get("fact"), str)
         ]
 
         if not verified_facts:
-            raise ValueError("No verified facts are available for content generation.")
+            raise ValueError(
+                "Cannot generate content without verified facts."
+            )
 
         prompt = f"""
-Create an educational Instagram carousel about this Indian finance topic.
+Create an educational Instagram carousel about an Indian finance topic.
 
-Topic:
+TOPIC:
 {report.topic}
 
-Research question:
+RESEARCH QUESTION:
 {report.research_question}
 
 VERIFIED FACTS:
-{json.dumps(verified_facts, indent=2)}
+{json.dumps(verified_facts, ensure_ascii=False, indent=2)}
 
 IMPORTANT NUMBERS:
-{json.dumps(report.important_numbers, indent=2)}
-
-Use these numbers ONLY when they are already explicitly supported by VERIFIED FACTS.
+{json.dumps(report.important_numbers, ensure_ascii=False, indent=2)}
 
 ANALYSIS:
-{json.dumps(report.analysis, indent=2)}
-
-Analysis may be used only for general explanation and must NOT introduce new factual claims.
+{json.dumps(report.analysis, ensure_ascii=False, indent=2)}
 
 SOURCES:
-{json.dumps(report.sources, indent=2)}
+{json.dumps(report.sources, ensure_ascii=False, indent=2)}
 
 Rules:
-1. Use ONLY the verified facts and information provided above.
-2. Do not invent statistics, dates, rates, examples, or claims.
-3. Do not provide personalized financial advice.
-4. Do not promise returns or guaranteed outcomes.
-5. Make the content understandable to an Indian young professional.
-6. Create a useful educational carousel.
-7. Keep each slide concise and easy to read.
-8. Clearly distinguish facts from explanation.
-9. Do not mention claims that are unverified or conflicting.
-10. Preserve important financial numbers exactly as provided.
-11. The sources must be the URLs provided above.
-12. Every factual statement in the post must be listed in the "claims" array.
-13. The "claims" array may contain ONLY the exact factual statements from VERIFIED FACTS.
-14. Do not convert important numbers into new claims.
-15. Do not use analysis or source descriptions as factual claims.
-16. Do not add, combine, infer, or expand factual claims beyond VERIFIED FACTS.
-17. If a fact is not in VERIFIED FACTS, do not state it as a fact in the post.
+1. Use only the verified facts supplied above.
+2. Never invent financial claims, statistics, dates or rates.
+3. Do not give personalized financial advice or guarantee outcomes.
+4. Write clearly for young professionals in India.
+5. Keep carousel slides concise and useful.
+6. Do not mention unverified or conflicting claims.
+7. Use only the supplied source URLs.
+8. Every factual statement must be included in the claims array.
+9. The claims array must contain only exact statements from VERIFIED FACTS.
+10. Do not introduce new factual claims through the caption or call to action.
+11. Preserve financial numbers exactly as supported by the verified facts.
 
-Return ONLY valid JSON in this exact structure:
-
+Return a JSON object with exactly these fields:
 {{
-  "topic": "...",
-  "hook": "...",
-  "slides": [
-    "...",
-    "...",
-    "..."
-  ],
-  "caption": "...",
-  "call_to_action": "...",
-  "sources": [
-    "https://..."
-  ],
-  "claims": [
-    "..."
-  ]
+  "topic": "string",
+  "hook": "string",
+  "slides": ["slide 1", "slide 2", "slide 3"],
+  "caption": "string",
+  "call_to_action": "string",
+  "sources": ["https://..."],
+  "claims": ["exact verified statement"]
 }}
 """
 
-        result = subprocess.run(
-            [
-                "openclaw",
-                "agent",
-                "--json",
-                "--message",
-                prompt,
-            ],
-            capture_output=True,
-            text=True,
-            check=True,
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "stream": False,
+            "format": "json",
+            "options": {"temperature": 0.2},
+        }
+
+        request = urllib.request.Request(
+            f"{self.base_url}/api/generate",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
         )
 
-        response = json.loads(result.stdout)
-        text = response["result"]["payloads"][0]["text"].strip()
+        try:
+            with urllib.request.urlopen(request, timeout=240) as response:
+                result = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(
+                f"Ollama returned HTTP {exc.code}: {detail[:500]}"
+            ) from exc
+        except urllib.error.URLError as exc:
+            raise RuntimeError(
+                f"Could not connect to Ollama at {self.base_url}: {exc}"
+            ) from exc
+        except TimeoutError as exc:
+            raise RuntimeError(
+                "Ollama content generation timed out after 240 seconds."
+            ) from exc
 
-        if text.startswith("```"):
-            lines = text.splitlines()
+        text = result.get("response", "").strip()
+        if not text:
+            raise ValueError("Ollama returned an empty content response.")
 
-            if lines and lines[0].startswith("```"):
-                lines = lines[1:]
-
-            if lines and lines[-1].strip() == "```":
-                lines = lines[:-1]
-
-            text = "\n".join(lines).strip()
-
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"Ollama returned invalid JSON: {text[:300]}"
+            ) from exc
 
         required_fields = {
             "topic",
@@ -122,14 +128,18 @@ Return ONLY valid JSON in this exact structure:
             "sources",
             "claims",
         }
-
         missing_fields = required_fields - data.keys()
-
         if missing_fields:
             raise ValueError(
-                f"Generated content is missing required fields: "
+                f"Generated content is missing fields: "
                 f"{sorted(missing_fields)}"
             )
+
+        for field in ("slides", "sources", "claims"):
+            if not isinstance(data[field], list):
+                raise ValueError(
+                    f"Generated content field '{field}' must be a list."
+                )
 
         return InstagramPost(
             topic=data["topic"],
