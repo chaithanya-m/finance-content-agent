@@ -55,6 +55,7 @@ Verified facts, the only statements allowed on slides:
 {json.dumps(facts, ensure_ascii=False)}
 
 Rules:
+- Include every verified fact exactly once as a slide, in the supplied order.
 - Copy each slide exactly from one verified fact. Do not paraphrase, shorten,
   explain, add headings, or add any other slide text.
 - The claims array must contain the exact same statements in the same order
@@ -153,9 +154,9 @@ Rules:
         return InstagramPost(
             topic=data["topic"],
             hook=data["hook"],
-            slides=data["slides"],
+            slides=facts,
             caption=data["caption"],
             call_to_action=data["call_to_action"],
             sources=data["sources"],
-            claims=data["claims"],
+            claims=facts,
         )

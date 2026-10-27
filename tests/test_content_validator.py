@@ -14,7 +14,16 @@ def make_report() -> ResearchReport:
             {
                 "fact": VERIFIED_FACT,
                 "status": "verified",
-                "evidence": [],
+                "evidence": [
+                    {
+                        "source_name": "Reserve Bank of India",
+                        "source_url": "https://rbi.org.in",
+                        "evidence_text": VERIFIED_FACT,
+                        "support": "supporting",
+                        "published_at": "2026-10-07",
+                        "as_of_date": "2026-10-26",
+                    }
+                ],
                 "notes": "Supported by an official source.",
             }
         ],
@@ -22,7 +31,8 @@ def make_report() -> ResearchReport:
             {
                 "source_name": "Reserve Bank of India",
                 "source_url": "https://rbi.org.in",
-                "published_at": None,
+                "published_at": "2026-10-07",
+                "as_of_date": "2026-10-26",
             }
         ],
     )
@@ -91,3 +101,65 @@ def test_rejects_source_url_not_present_in_research_report():
     post = make_post(sources=["https://example.com/source"])
 
     assert ContentValidator().validate(post, make_report()) is False
+
+
+def test_rejects_verified_but_off_topic_home_loan_claim():
+    report = make_report()
+    irrelevant_claim = "Lenders must explain how loan rates affect borrowers."
+    report.verified_facts[0]["fact"] = irrelevant_claim
+    report.verified_facts[0]["evidence"][0]["evidence_text"] = irrelevant_claim
+    post = make_post(slides=[irrelevant_claim], claims=[irrelevant_claim])
+
+    assert ContentValidator().validate(post, report) is False
+
+
+def test_rejects_draft_for_a_different_requested_topic():
+    post = make_post()
+    post.topic = "Home loan EMI"
+
+    assert ContentValidator().validate(post, make_report()) is False
+
+
+def test_requires_all_verified_claims_in_the_carousel():
+    report = make_report()
+    second_fact = {
+        "fact": "The rate is set by the RBI.",
+        "status": "verified",
+        "evidence": [
+            {
+                "source_name": "Reserve Bank of India",
+                "source_url": "https://rbi.org.in",
+                "evidence_text": "The rate is set by the RBI.",
+                "support": "supporting",
+            }
+        ],
+        "notes": "Quoted and verified.",
+    }
+    report.verified_facts.append(second_fact)
+
+    assert ContentValidator().validate(make_post(), report) is False
+
+
+def test_requires_sources_for_each_verified_claim_in_the_output():
+    report = make_report()
+    report.sources.append(
+        {
+            "source_name": "Reserve Bank of India",
+            "source_url": "https://www.rbi.org.in/decision",
+            "published_at": "2026-10-07",
+            "as_of_date": None,
+        }
+    )
+    report.verified_facts[0]["evidence"].append(
+        {
+            "source_name": "Reserve Bank of India",
+            "source_url": "https://www.rbi.org.in/decision",
+            "evidence_text": VERIFIED_FACT,
+            "support": "supporting",
+            "published_at": "2026-10-07",
+            "as_of_date": None,
+        }
+    )
+    post = make_post(sources=["https://rbi.org.in"])
+
+    assert ContentValidator().validate(post, report) is False

@@ -1,0 +1,208 @@
+{
+  "topic": "Fixed versus floating home loan rates",
+  "format_hint": "both",
+  "language": "conversational Indian English",
+  "guide_persona": "Riya — a friendly, knowledgeable 28-year-old who works in finance and loves explaining money concepts to beginners.",
+  "learner_persona": "Arjun — a curious 16-year-old who has just started paying attention to money and asks honest, relatable questions.",
+  "dialogue": [
+    {
+      "speaker": "LEARNER",
+      "text": "Arjun: Hey, Riya! I'm thinking about buying a house, and I'm a bit confused about fixed versus floating home loan rates. Can you explain this to me?",
+      "arc_stage": "hook"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your allowance. Now, if you put your money in a piggy bank that doesn't change, that's like a fixed-rate home loan. But if you put your money in a piggy bank that can change, like a bank account, that's like a floating-rate home loan.",
+      "arc_stage": "scenario"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: With a fixed-rate home loan, the interest rate stays the same throughout the loan period. This means you'll pay the same amount each month, which can be easier to budget for. But if interest rates go up, you might have to pay more money than you planned.",
+      "arc_stage": "explanation"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Let's say you take a fixed-rate home loan of Rs. 50 lakh at an annual interest rate of 8%. If the interest rate goes up to 9% after 5 years, you'll have to pay more money each month to keep up with the higher interest. That's why it's important to check your repayment capacity and understand how floating-rate loans work.",
+      "arc_stage": "example"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: If you don't understand floating-rate home loans, you might end up paying more money than you need to, or you might not be able to afford the loan at all. It's like if you put your money in a piggy bank that can change, and then the piggy bank keeps changing to a higher amount. You might not have enough money to buy the house you want.",
+      "arc_stage": "consequences"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: To avoid these problems, it's a good idea to talk to a financial advisor or a bank representative who can explain the different types of home loans and help you choose the best one for your needs.",
+      "arc_stage": "takeaway"
+    }
+  ],
+  "carousel_slides": [
+    {
+      "slide_number": 1,
+      "arc_stage": "hook",
+      "title": "Why Do We Need to Understand Fixed vs. Floating Home Loan Rates?",
+      "guide_line": "",
+      "learner_line": "Arjun: Hey, Riya! I'm thinking about buying a house, and I'm a bit confused about fixed versus floating home loan rates. Can you explain this to me?",
+      "visual_prompt": "Bright, warm opening card. Arjun looks puzzled, holding a phone showing a news headline about the topic. Speech bubble with the hook question. Clean typography on a light background.",
+      "key_fact": "",
+      "on_screen_text": "\"Arjun: Hey, Riya! I'm thinking about buying a house, and I'm a bit confused about fixed versus floating home loan rates. Can you explain this to me?\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 2,
+      "arc_stage": "scenario",
+      "title": "Imagine a Piggy Bank with Different Rates",
+      "guide_line": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your allowance. Now, if you put your money in a piggy bank that doesn't change, that's like a fixed-rate home loan. But if you put your money in a piggy bank that can change, like a bank account, that's like a floating-rate home loan.",
+      "learner_line": "",
+      "visual_prompt": "Split-panel illustration: left side shows a common everyday situation related to the topic (e.g., receiving a bank statement, paying an EMI), right side shows Arjun looking uncertain. Conversational speech bubbles.",
+      "key_fact": "",
+      "on_screen_text": "Riya: \"Riya: Sure, Arjun! Imagine you have a piggy bank where you put your allowance. Now, if you put your money in a piggy bank that doesn't change, that's like a fixed-rate home loan. But if you put your money in a piggy bank that can change, like a bank account, that's like a floating-rate home loan.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 3,
+      "arc_stage": "explanation",
+      "title": "Fixed vs. Floating Home Loan Rates Explained",
+      "guide_line": "Riya: With a fixed-rate home loan, the interest rate stays the same throughout the loan period. This means you'll pay the same amount each month, which can be easier to budget for. But if interest rates go up, you might have to pay more money than you planned.",
+      "learner_line": "",
+      "visual_prompt": "Riya (GUIDE) with a friendly smile, pointing to a simple diagram or infographic that illustrates the concept. Clean layout, no clutter. Key term highlighted in a coloured box.",
+      "key_fact": "UCBs must check borrowers' repayment capacity for floating-rate housing loans, including possible EMI increases when benchmark rates rise.",
+      "on_screen_text": "Riya: \"Riya: With a fixed-rate home loan, the interest rate stays the same throughout the loan period. This means you'll pay the same amount each month, which can be easier to budget for. But if interest rates go up, you might have to pay more money than you planned.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 4,
+      "arc_stage": "example",
+      "title": "Example of How Interest Rates Can Change",
+      "guide_line": "Riya: Let's say you take a fixed-rate home loan of Rs. 50 lakh at an annual interest rate of 8%. If the interest rate goes up to 9% after 5 years, you'll have to pay more money each month to keep up with the higher interest. That's why it's important to check your repayment capacity and understand how floating-rate loans work.",
+      "learner_line": "",
+      "visual_prompt": "Clean worked-example card with simple numbers and a visual calculator or table. Both characters react — Arjun has an 'aha!' expression. Numbers are large and readable.",
+      "key_fact": "UCBs are advised to have a policy for resetting floating rates on EMI-based housing loans.",
+      "on_screen_text": "Riya: \"Riya: Let's say you take a fixed-rate home loan of Rs. 50 lakh at an annual interest rate of 8%. If the interest rate goes up to 9% after 5 years, you'll have to pay more money each month to keep up with the higher interest. That's why it's important to check your repayment capacity and understand how floating-rate loans work.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 5,
+      "arc_stage": "consequences",
+      "title": "The Consequences of Not Understanding Fixed vs. Floating Home Loan Rates",
+      "guide_line": "Riya: If you don't understand floating-rate home loans, you might end up paying more money than you need to, or you might not be able to afford the loan at all. It's like if you put your money in a piggy bank that can change, and then the piggy bank keeps changing to a higher amount. You might not have enough money to buy the house you want.",
+      "learner_line": "",
+      "visual_prompt": "Two-path illustration: one path shows a person making an informed decision, the other shows the consequence of not knowing. Friendly, non-scary visual. No doom and gloom.",
+      "key_fact": "UCBs are advised to have a policy for resetting floating rates on EMI-based housing loans.",
+      "on_screen_text": "Riya: \"Riya: If you don't understand floating-rate home loans, you might end up paying more money than you need to, or you might not be able to afford the loan at all. It's like if you put your money in a piggy bank that can change, and then the piggy bank keeps changing to a higher amount. You might not have enough money to buy the house you want.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 6,
+      "arc_stage": "takeaway",
+      "title": "How to Choose the Right Home Loan for You",
+      "guide_line": "Riya: To avoid these problems, it's a good idea to talk to a financial advisor or a bank representative who can explain the different types of home loans and help you choose the best one for your needs.",
+      "learner_line": "",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette.",
+      "key_fact": "",
+      "on_screen_text": "Riya: \"Riya: To avoid these problems, it's a good idea to talk to a financial advisor or a bank representative who can explain the different types of home loans and help you choose the best one for your needs.\"",
+      "footnote": "Source: https://rbi.org.in/Scripts/NotificationUser.aspx?Id=12655&Mode=0"
+    },
+    {
+      "slide_number": 7,
+      "arc_stage": "cta",
+      "title": "Save & Share 📌",
+      "guide_line": "Follow for more money basics — one concept at a time. Save this post so you can come back to it!",
+      "learner_line": "",
+      "visual_prompt": "Bright, positive closing card. Both Riya and Arjun smile and wave. Large bold text: 'Follow @[handle] for money basics'. Instagram-style save and follow icons.",
+      "key_fact": "",
+      "on_screen_text": "Follow for more money basics 💡\nSave this post for later 📌",
+      "footnote": "Educational content only; not personalised financial advice."
+    }
+  ],
+  "video_scenes": [
+    {
+      "scene_number": 1,
+      "arc_stage": "hook",
+      "duration_seconds": 4,
+      "visual_direction": "Vertical 9:16 opening. Arjun sits at a table scrolling his phone. A news notification pops up. He looks confused. Riya walks in. Energetic music starts softly.",
+      "guide_voiceover": "",
+      "learner_voiceover": "Arjun: Hey, Riya! I'm thinking about buying a house, and I'm a bit confused about fixed versus floating home loan rates. Can you explain this to me?",
+      "on_screen_text": "Arjun: Hey, Riya! I'm thinking about buying a house, and I'm a bit confused about fixed versus floating home loan rates. Can you explain this to me?",
+      "visual_prompt": "Bright, warm opening card. Arjun looks puzzled, holding a phone showing a news headline about the topic. Speech bubble with the hook question. Clean typography on a light background."
+    },
+    {
+      "scene_number": 2,
+      "arc_stage": "scenario",
+      "duration_seconds": 5,
+      "visual_direction": "Side-by-side animation: Arjun's everyday situation on screen. Riya narrates from a corner overlay. Simple, friendly animation.",
+      "guide_voiceover": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your allowance. Now, if you put your money in a piggy bank that doesn't change, that's like a fixed-rate home loan. But if you put your money in a piggy bank that can change, like a bank account, that's like a floating-rate home loan.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your allowance. Now, if you put your money in a piggy bank that doesn't change, that's like a fixed-rate home loan. But if you put your money in a piggy bank that can change, like a bank account, that's like a floating-rate home loan.",
+      "visual_prompt": "Split-panel illustration: left side shows a common everyday situation related to the topic (e.g., receiving a bank statement, paying an EMI), right side shows Arjun looking uncertain. Conversational speech bubbles."
+    },
+    {
+      "scene_number": 3,
+      "arc_stage": "explanation",
+      "duration_seconds": 6,
+      "visual_direction": "Riya stands in front of a simple animated diagram that appears on screen as she speaks. The key term animates in as text. Calm, clear background music.",
+      "guide_voiceover": "Riya: With a fixed-rate home loan, the interest rate stays the same throughout the loan period. This means you'll pay the same amount each month, which can be easier to budget for. But if interest rates go up, you might have to pay more money than you planned.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: With a fixed-rate home loan, the interest rate stays the same throughout the loan period. This means you'll pay the same amount each month, which can be easier to budget for. But if interest rates go up, you might have to pay more money than you planned.",
+      "visual_prompt": "Riya (GUIDE) with a friendly smile, pointing to a simple diagram or infographic that illustrates the concept. Clean layout, no clutter. Key term highlighted in a coloured box."
+    },
+    {
+      "scene_number": 4,
+      "arc_stage": "example",
+      "duration_seconds": 7,
+      "visual_direction": "Screen shows a simple worked example (numbers animate in). Arjun reacts with 'aha!' expression. Cut to Riya confirming. Upbeat, light music.",
+      "guide_voiceover": "Riya: Let's say you take a fixed-rate home loan of Rs. 50 lakh at an annual interest rate of 8%. If the interest rate goes up to 9% after 5 years, you'll have to pay more money each month to keep up with the higher interest. That's why it's important to check your repayment capacity and understand how floating-rate loans work.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Let's say you take a fixed-rate home loan of Rs. 50 lakh at an annual interest rate of 8%. If the interest rate goes up to 9% after 5 years, you'll have to pay more money each month to keep up with the higher interest. That's why it's important to check your repayment capacity and understand how floating-rate loans work.",
+      "visual_prompt": "Clean worked-example card with simple numbers and a visual calculator or table. Both characters react — Arjun has an 'aha!' expression. Numbers are large and readable."
+    },
+    {
+      "scene_number": 5,
+      "arc_stage": "consequences",
+      "duration_seconds": 6,
+      "visual_direction": "Split screen: animated path A (informed decision) vs path B (uninformed). Simple, relatable visuals. Riya voiceover explains.",
+      "guide_voiceover": "Riya: If you don't understand floating-rate home loans, you might end up paying more money than you need to, or you might not be able to afford the loan at all. It's like if you put your money in a piggy bank that can change, and then the piggy bank keeps changing to a higher amount. You might not have enough money to buy the house you want.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: If you don't understand floating-rate home loans, you might end up paying more money than you need to, or you might not be able to afford the loan at all. It's like if you put your money in a piggy bank that can change, and then the piggy bank keeps changing to a higher amount. You might not have enough money to buy the house you want.",
+      "visual_prompt": "Two-path illustration: one path shows a person making an informed decision, the other shows the consequence of not knowing. Friendly, non-scary visual. No doom and gloom."
+    },
+    {
+      "scene_number": 6,
+      "arc_stage": "takeaway",
+      "duration_seconds": 5,
+      "visual_direction": "Closing shot: both Riya and Arjun on screen. Checklist animates in. Riya smiles and gestures to follow. Upbeat closing music. Call to action text appears.",
+      "guide_voiceover": "Riya: To avoid these problems, it's a good idea to talk to a financial advisor or a bank representative who can explain the different types of home loans and help you choose the best one for your needs.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: To avoid these problems, it's a good idea to talk to a financial advisor or a bank representative who can explain the different types of home loans and help you choose the best one for your needs.",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette."
+    },
+    {
+      "scene_number": 7,
+      "arc_stage": "cta",
+      "duration_seconds": 3,
+      "visual_direction": "Closing card. Both characters on screen. Call-to-action text animates in. Upbeat music fades out.",
+      "guide_voiceover": "Follow for more money basics — one concept at a time!",
+      "learner_voiceover": "",
+      "on_screen_text": "Follow for more money basics. Save this! 📌",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette."
+    }
+  ],
+  "aspect_ratio": "9:16",
+  "estimated_duration_seconds": 36,
+  "verified_facts": [
+    "UCBs must check borrowers' repayment capacity for floating-rate housing loans, including possible EMI increases when benchmark rates rise.",
+    "UCBs are advised to have a policy for resetting floating rates on EMI-based housing loans."
+  ],
+  "sources": [
+    "https://rbi.org.in/Scripts/NotificationUser.aspx?Id=12655&Mode=0"
+  ],
+  "caption": "Educational content only; this is not personalised financial advice.",
+  "call_to_action": "Follow for more money basics. Save this for later! 📌",
+  "hashtags": [
+    "#FinancialLiteracy",
+    "#MoneyBasics",
+    "#IndiaFinance",
+    "#PersonalFinance",
+    "#LearnWithRiya"
+  ]
+}

@@ -44,6 +44,7 @@ def resolve_claim(
             evidence_text=record.supporting_text,
             support=relation,
             published_at=record.source.published_at,
+            as_of_date=record.source.as_of_date,
         )
         for record, relation in evidence_relations
     ]

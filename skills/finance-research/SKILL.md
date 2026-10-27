@@ -269,6 +269,13 @@ Do not introduce unsupported factual claims.
 
 Suggest useful finance-content angles based only on the verified research.
 
+## Downstream Dialogue Script Handoff
+
+Once facts are verified, pass the `ResearchReport` to the `dialogue-script-generation` skill / `DialogueScriptGenerator`:
+- Every fact marked as `Verified` becomes the factual basis for the conversational lesson between Riya (Guide) and Arjun (Learner).
+- Claims marked `Unverified` or `Conflicting` must never be passed to the dialogue or carousel slides.
+- The 6-stage teaching arc (Hook → Scenario → Explanation → Example → Consequences → Takeaway) strictly references these verified facts.
+
 ## Unverified / Uncertain Information
 
 List claims that could not be verified.

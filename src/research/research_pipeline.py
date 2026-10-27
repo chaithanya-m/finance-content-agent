@@ -34,6 +34,7 @@ def build_research_report(
                     "evidence_text": item.evidence_text,
                     "support": item.support,
                     "published_at": item.published_at,
+                    "as_of_date": item.as_of_date,
                 }
                 for item in result.evidence
             ],
@@ -57,6 +58,7 @@ def build_research_report(
                     "source_name": source.source_name,
                     "source_url": source.source_url,
                     "published_at": source.published_at,
+                    "as_of_date": source.as_of_date,
                 }
             )
             
