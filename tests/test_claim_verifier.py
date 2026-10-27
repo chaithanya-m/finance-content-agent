@@ -7,6 +7,7 @@ from src.research.research_service import research_claim
 def make_evidence(
     text: str,
     url: str = "https://rbi.org.in",
+    verification_status: str | None = None,
 ) -> EvidenceRecord:
     source = SourceDocument(
         source_name="Reserve Bank of India",
@@ -20,13 +21,14 @@ def make_evidence(
         claim="RBI repo rate is 5.25%",
         source=source,
         supporting_text=text,
+        verification_status=verification_status,
     )
 
 
 def test_direct_support():
     statement = "Policy repo rate is 5.25 per cent."
     claim = Claim(statement)
-    evidence = make_evidence(statement)
+    evidence = make_evidence(statement, verification_status="supported")
 
     assert evidence_relation(claim, evidence) == "supporting"
 
@@ -49,7 +51,10 @@ def test_explicit_different_value_is_not_supporting():
 
 def test_same_statement_with_a_different_value_is_contradicting():
     claim = Claim("Policy Repo Rate : 5.50%")
-    evidence = make_evidence("Policy Repo Rate : 5.25%")
+    evidence = make_evidence(
+        "Policy Repo Rate : 5.25%",
+        verification_status="contradicting",
+    )
 
     assert evidence_relation(claim, evidence) == "contradicting"
 
@@ -59,8 +64,16 @@ def test_equal_authority_sources_with_different_values_conflict():
     result = research_claim(
         claim_text,
         [
-            make_evidence(claim_text, "https://rbi.org.in"),
-            make_evidence("Policy Repo Rate : 5.25%", "https://rbi.org.in"),
+            make_evidence(
+                claim_text,
+                "https://rbi.org.in/decision",
+                "supported",
+            ),
+            make_evidence(
+                "Policy Repo Rate : 5.25%",
+                "https://rbi.org.in/current",
+                "contradicting",
+            ),
         ],
     )
 
@@ -69,6 +82,29 @@ def test_equal_authority_sources_with_different_values_conflict():
         "supporting",
         "contradicting",
     ]
+
+
+def test_quote_equality_alone_does_not_verify_a_claim():
+    statement = "Policy repo rate is 5.25 per cent."
+    result = research_claim(statement, [make_evidence(statement)])
+
+    assert result.status == "unverified"
+
+
+def test_source_name_cannot_override_an_untrusted_domain():
+    claim_text = "The policy repo rate is 5.50%."
+    result = research_claim(
+        claim_text,
+        [
+            make_evidence(
+                claim_text,
+                "https://example.com/rbi-policy",
+                "supported",
+            )
+        ],
+    )
+
+    assert result.status == "unverified"
 
 
 def test_unrelated_numbers_are_not_relevant():

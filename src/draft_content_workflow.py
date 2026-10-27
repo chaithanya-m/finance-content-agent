@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from .content_validator import ContentValidator
+from .dialogue_script import DialogueScript
+from .dialogue_script_generator import DialogueScriptGenerator
 from .research.local_research_agent import LocalResearchAgent
 from .research.research_request import ResearchRequest
 from .research.topic import Topic
@@ -80,7 +82,12 @@ class DraftContentWorkflow:
 
         return [item for item in history if isinstance(item, dict)]
 
-    def select_topic(self, requested_title: str | None = None) -> Topic:
+    def select_topic(
+        self,
+        requested_title: str | None = None,
+        random_pick: bool = False,
+        skip_titles: set[str] | None = None,
+    ) -> Topic:
         topics = self._load_topics()
 
         if requested_title:
@@ -99,21 +106,24 @@ class DraftContentWorkflow:
                 priority="high",
             )
 
+        # Build the set of already-completed titles
         history = self._load_history()
         completed = {
             item.get("title")
             for item in history
             if isinstance(item.get("title"), str)
         }
+        # Also exclude any titles provided externally (e.g. from the DB)
+        if skip_titles:
+            completed |= skip_titles
+
         available = [topic for topic in topics if topic.title not in completed]
 
         if not available:
-            raise RuntimeError(
-                "All configured topics have been generated. "
-                "Add new candidates to config/topics.json before generating more drafts."
-            )
+            # If all topics are done, reset and allow any topic
+            available = topics
 
-        selected = TopicSelector().select(available)
+        selected = TopicSelector().select(available, random_pick=random_pick)
         if selected is None:
             raise RuntimeError("No topic could be selected.")
 
@@ -246,6 +256,178 @@ class DraftContentWorkflow:
 
         return "\n".join(lines).rstrip() + "\n"
 
+    # ── Dialogue script renderers ─────────────────────────────────────────────
+
+    @staticmethod
+    def _dialogue_carousel_markdown(script: DialogueScript) -> str:
+        """
+        Human-readable markdown for the dialogue-format carousel.
+
+        Pass the JSON version (dialogue_carousel.json) to another LLM with:
+
+            "You will receive a CarouselScript JSON. Render each slide as an
+             Instagram carousel image. Keep the two-character conversation.
+             Use only the facts listed in verified_facts."
+        """
+        lines = [
+            f"# Carousel script: {script.topic}",
+            "",
+            "> **Rendering contract** — pass `dialogue_carousel.json` to your",
+            "> image-generation or carousel-creation LLM with this instruction:",
+            "> *\"Render each slide as described. Keep the GUIDE / LEARNER",
+            "> conversation. Use only the facts listed in verified_facts.\"*",
+            "",
+            f"**Characters:** {script.guide_persona}  |  {script.learner_persona}",
+            f"**Language:** {script.language}",
+            f"**Format:** Instagram carousel ({len(script.carousel_slides)} slides)",
+            "",
+            "---",
+            "",
+        ]
+
+        for slide in script.carousel_slides:
+            lines.extend([
+                f"## Slide {slide.slide_number} — {slide.arc_stage.upper()}",
+                "",
+                f"**Title:** {slide.title}",
+                "",
+            ])
+            if slide.learner_line:
+                lines.extend([
+                    f"**🧑 Arjun (Learner):** {slide.learner_line}",
+                    "",
+                ])
+            if slide.guide_line:
+                lines.extend([
+                    f"**👩 Riya (Guide):** {slide.guide_line}",
+                    "",
+                ])
+            lines.extend([
+                f"**📱 On-screen text:** {slide.on_screen_text}",
+                "",
+                f"**🎨 Visual prompt:** {slide.visual_prompt}",
+                "",
+            ])
+            if slide.key_fact:
+                lines.extend([
+                    f"**📌 Verified fact used:** {slide.key_fact}",
+                    "",
+                ])
+            if slide.footnote:
+                lines.extend([
+                    f"**📎 Footnote:** {slide.footnote}",
+                    "",
+                ])
+            lines.append("---")
+            lines.append("")
+
+        lines.extend([
+            "## Caption",
+            "",
+            script.caption,
+            "",
+            "## Call to action",
+            "",
+            script.call_to_action,
+            "",
+            "## Hashtags",
+            "",
+            " ".join(script.hashtags),
+            "",
+            "## Verified facts (do not change or add to these)",
+            "",
+        ])
+        lines.extend(f"- {fact}" for fact in script.verified_facts)
+        lines.extend(["", "## Sources", ""])
+        lines.extend(f"- {url}" for url in script.sources)
+
+        return "\n".join(lines).rstrip() + "\n"
+
+    @staticmethod
+    def _dialogue_video_markdown(script: DialogueScript) -> str:
+        """
+        Human-readable markdown for the dialogue-format video script.
+
+        Pass the JSON version (dialogue_video.json) to a video generation
+        LLM or tool with:
+
+            "You will receive a VideoScript JSON. Render each scene as a
+             short vertical video segment. Keep the GUIDE / LEARNER dialogue.
+             Use only the facts in verified_facts. Do not add numbers or
+             claims that are not in verified_facts."
+        """
+        lines = [
+            f"# Video script: {script.topic}",
+            "",
+            "> **Rendering contract** — pass `dialogue_video.json` to your",
+            "> video-generation LLM or tool with this instruction:",
+            "> *\"Render each scene as described. Keep the GUIDE / LEARNER",
+            "> dialogue. Use only facts in verified_facts.\"*",
+            "",
+            f"**Characters:** {script.guide_persona}  |  {script.learner_persona}",
+            f"**Format:** Vertical video ({script.aspect_ratio})",
+            f"**Estimated duration:** {script.estimated_duration_seconds} seconds",
+            f"**Language:** {script.language}",
+            "",
+            "---",
+            "",
+            "## Full Teaching Dialogue",
+            "",
+            "*(Use this to understand the conversational flow before rendering scenes.)*",
+            "",
+        ]
+
+        for line in script.dialogue:
+            emoji = "👩" if line.speaker == "GUIDE" else "🧑"
+            name = "Riya" if line.speaker == "GUIDE" else "Arjun"
+            lines.extend([
+                f"**{emoji} {name} [{line.arc_stage.upper()}]:** {line.text}",
+                "",
+            ])
+
+        lines.extend(["---", "", "## Scenes", ""])
+
+        for scene in script.video_scenes:
+            lines.extend([
+                f"## Scene {scene.scene_number} — {scene.arc_stage.upper()} "
+                f"({scene.duration_seconds}s)",
+                "",
+                f"**🎬 Visual direction:** {scene.visual_direction}",
+                "",
+                f"**📱 On-screen text:** {scene.on_screen_text}",
+                "",
+            ])
+            if scene.learner_voiceover:
+                lines.extend([
+                    f"**🧑 Arjun (voiceover):** {scene.learner_voiceover}",
+                    "",
+                ])
+            if scene.guide_voiceover:
+                lines.extend([
+                    f"**👩 Riya (voiceover):** {scene.guide_voiceover}",
+                    "",
+                ])
+            lines.extend([
+                f"**🎨 Visual prompt:** {scene.visual_prompt}",
+                "",
+                "---",
+                "",
+            ])
+
+        lines.extend([
+            "## Caption",
+            "",
+            script.caption,
+            "",
+            "## Verified facts (do not change or add to these)",
+            "",
+        ])
+        lines.extend(f"- {fact}" for fact in script.verified_facts)
+        lines.extend(["", "## Sources", ""])
+        lines.extend(f"- {url}" for url in script.sources)
+
+        return "\n".join(lines).rstrip() + "\n"
+
     def generate_drafts(self, topic: Topic) -> Path:
         request = ResearchRequest(
             topic=topic.title,
@@ -290,6 +472,19 @@ class DraftContentWorkflow:
 
         video = self._build_video_script(post)
 
+        # ── Dialogue scripts (new two-character teaching format) ──────────────
+        print("Generating dialogue teaching scripts...")
+        dialogue_script: DialogueScript | None = None
+        dialogue_error: str | None = None
+        try:
+            dialogue_script = DialogueScriptGenerator().generate(report)
+        except (ValueError, RuntimeError) as exc:
+            dialogue_error = str(exc)
+            print(
+                f"  Warning: dialogue script generation failed — {exc}\n"
+                "  Continuing without dialogue scripts."
+            )
+
         now = datetime.now().astimezone()
         timestamp = now.strftime("%Y%m%d_%H%M%S_%f")
         output_path = self.output_dir / f"{timestamp}_{slugify(topic.title)}"
@@ -304,6 +499,29 @@ class DraftContentWorkflow:
         (output_path / "video_script.md").write_text(
             self._video_markdown(video), encoding="utf-8"
         )
+
+        # Write dialogue scripts (best-effort — do not fail the entire workflow)
+        if dialogue_script is not None:
+            self._write_json(
+                output_path / "dialogue_carousel.json",
+                asdict(dialogue_script),
+            )
+            (output_path / "dialogue_carousel.md").write_text(
+                self._dialogue_carousel_markdown(dialogue_script),
+                encoding="utf-8",
+            )
+            self._write_json(
+                output_path / "dialogue_video.json",
+                asdict(dialogue_script),
+            )
+            (output_path / "dialogue_video.md").write_text(
+                self._dialogue_video_markdown(dialogue_script),
+                encoding="utf-8",
+            )
+        elif dialogue_error:
+            (output_path / "dialogue_error.txt").write_text(
+                dialogue_error, encoding="utf-8"
+            )
 
         history = self._load_history()
         history.append(

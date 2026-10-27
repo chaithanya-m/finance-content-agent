@@ -22,6 +22,7 @@ class Evidence:
     evidence_text: str
     support: EvidenceSupport
     published_at: str | None = None
+    as_of_date: str | None = None
 
 
 @dataclass

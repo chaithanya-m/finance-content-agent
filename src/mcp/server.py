@@ -18,6 +18,7 @@ class EvidenceInput(BaseModel):
     source_type: str
     supporting_text: str
     published_at: str | None = None
+    as_of_date: str | None = None
     title: str | None = None
 
 
@@ -33,6 +34,7 @@ async def verify_claim(
     source_type: str,
     supporting_text: str,
     published_at: str | None = None,
+    as_of_date: str | None = None,
 ) -> dict:
     """Verify a finance claim against supplied source evidence."""
 
@@ -43,6 +45,7 @@ async def verify_claim(
         content=supporting_text,
         source_type=source_type,
         published_at=published_at,
+        as_of_date=as_of_date,
     )
 
     evidence = create_evidence_record(
@@ -67,6 +70,7 @@ async def verify_claim(
                 "support": item.support,
                 "evidence_text": item.evidence_text,
                 "published_at": item.published_at,
+                "as_of_date": item.as_of_date,
             }
             for item in result.evidence
         ],
@@ -92,6 +96,7 @@ async def verify_claims(
                 content=evidence_item.supporting_text,
                 source_type=evidence_item.source_type,
                 published_at=evidence_item.published_at,
+                as_of_date=evidence_item.as_of_date,
             )
 
             evidence_records.append(
@@ -118,6 +123,7 @@ async def verify_claims(
                     "support": evidence_item.support,
                     "evidence_text": evidence_item.evidence_text,
                     "published_at": evidence_item.published_at,
+                    "as_of_date": evidence_item.as_of_date,
                 }
                 for evidence_item in result.evidence
             ],

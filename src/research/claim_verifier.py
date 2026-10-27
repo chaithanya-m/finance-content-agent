@@ -14,19 +14,14 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip().casefold()
 
 
-def _quoted_verbatim(claim: Claim, evidence: EvidenceRecord) -> bool:
-    claim_text = _normalize(claim.claim)
-    evidence_text = _normalize(evidence.supporting_text)
-    return bool(claim_text) and claim_text == evidence_text
-
-
-def _resolve_exact_evidence(
+def _resolve_assessed_evidence(
     claim: Claim,
     evidence_records: list[EvidenceRecord],
 ) -> bool:
     matching = []
     for record in evidence_records:
-        if not _quoted_verbatim(claim, record):
+        relation = evidence_relation(claim, record)
+        if relation not in {"supporting", "contradicting"}:
             continue
         source = classify_source(
             record.source.source_name,
@@ -37,7 +32,7 @@ def _resolve_exact_evidence(
             EvidenceWithAuthority(
                 value=record.supporting_text,
                 source=source,
-                relation="supporting",
+                relation=relation,
             )
         )
 
@@ -48,23 +43,24 @@ def _resolve_exact_evidence(
 
 
 def verify_claim(claim: Claim, evidence: EvidenceRecord) -> Claim:
-    supports = _quoted_verbatim(claim, evidence)
+    relation = evidence_relation(claim, evidence)
     claim.evidence.append(
         Evidence(
             source_name=evidence.source.source_name,
             source_url=evidence.source.source_url,
             evidence_text=evidence.supporting_text,
-            support="supporting" if supports else "not_relevant",
+            support=relation,
             published_at=evidence.source.published_at,
+            as_of_date=evidence.source.as_of_date,
         )
     )
 
-    if supports and _resolve_exact_evidence(claim, [evidence]):
+    if relation == "supporting" and _resolve_assessed_evidence(claim, [evidence]):
         claim.status = "verified"
-        claim.notes = "Claim appears verbatim in an authoritative source quotation."
+        claim.notes = "Claim was independently assessed as supported by an authoritative source."
     else:
         claim.status = "unverified"
-        claim.notes = "No authoritative source quotation contains the claim verbatim."
+        claim.notes = "No independent supporting assessment was supplied for authoritative evidence."
 
     return claim
 
@@ -73,13 +69,37 @@ def detect_conflict(
     claim: Claim,
     evidence_records: list[EvidenceRecord],
 ) -> Claim:
-    if _resolve_exact_evidence(claim, evidence_records):
-        claim.status = "verified"
-        claim.notes = "Claim appears verbatim in an authoritative source quotation."
+    relations = [
+        (record, evidence_relation(claim, record))
+        for record in evidence_records
+    ]
+    if not any(relation == "supporting" for _, relation in relations):
+        claim.status = "unverified"
+        claim.notes = "No independent supporting assessment was supplied."
         return claim
 
-    claim.status = "unverified"
-    claim.notes = "No authoritative source quotation contains the claim verbatim."
+    evidence = [
+        Evidence(
+            source_name=record.source.source_name,
+            source_url=record.source.source_url,
+            evidence_text=record.supporting_text,
+            support=relation,
+            published_at=record.source.published_at,
+            as_of_date=record.source.as_of_date,
+        )
+        for record, relation in relations
+    ]
+    claim.evidence = evidence
+    if not _resolve_assessed_evidence(
+        claim,
+        [record for record, relation in relations if relation in {"supporting", "contradicting"}],
+    ):
+        claim.status = "conflicting"
+        claim.notes = "Verified assessments from equally authoritative sources conflict."
+        return claim
+
+    claim.status = "verified"
+    claim.notes = "Claim was independently assessed against authoritative evidence."
 
     return claim
 
@@ -88,15 +108,22 @@ def evidence_supports_claim(
     claim: Claim,
     evidence: EvidenceRecord,
 ) -> bool:
-    return _quoted_verbatim(claim, evidence)
+    return evidence_relation(claim, evidence) == "supporting"
 
 
 def evidence_relation(
     claim: Claim,
     evidence: EvidenceRecord,
 ) -> str:
-    if _quoted_verbatim(claim, evidence):
+    if evidence.verification_status == "supported":
         return "supporting"
+    if evidence.verification_status == "contradicting":
+        return "contradicting"
+    if evidence.verification_status == "insufficient":
+        return "not_relevant"
+
+    if evidence.verification_status is None:
+        return "not_relevant"
 
     claim_text = _normalize(claim.claim)
     evidence_text = _normalize(evidence.supporting_text)

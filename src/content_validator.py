@@ -98,6 +98,16 @@ class ContentValidator:
             }
             if not set(post.sources).issubset(allowed_sources):
                 return False
+            required_sources = {
+                evidence.get("source_url")
+                for fact in report.verified_facts
+                if isinstance(fact, dict)
+                for evidence in fact.get("evidence", [])
+                if isinstance(evidence, dict)
+                and evidence.get("support") == "supporting"
+            }
+            if not required_sources.issubset(set(post.sources)):
+                return False
 
         return True
 
@@ -203,10 +213,10 @@ class ContentValidator:
         post: InstagramPost,
         report: ResearchReport,
     ) -> bool:
-        verified_claims = {
-            self._normalize_claim(fact.get("fact", ""))
+        verified_facts = {
+            self._normalize_claim(fact.get("fact", "")): fact
             for fact in report.verified_facts
-            if fact.get("status") == "verified"
+            if isinstance(fact, dict) and fact.get("status") == "verified"
         }
 
         if not post.claims:
@@ -218,11 +228,61 @@ class ContentValidator:
             if isinstance(slide, str)
         ]
         claims = [self._normalize_claim(claim) for claim in post.claims]
+        all_verified_claims = list(verified_facts)
         return (
             len(slide_claims) == len(post.slides)
             and len(claims) == len(post.claims)
             and slide_claims == claims
-            and all(claim in verified_claims for claim in claims)
+            and claims == all_verified_claims
+            and all(
+                claim in verified_facts
+                and len(claim) <= 180
+                and self._claim_is_relevant(
+                    claim,
+                    report.topic,
+                )
+                and self._fact_has_cited_support(verified_facts[claim], report)
+                for claim in claims
+            )
+        )
+
+    def _claim_is_relevant(self, claim: str, topic: str) -> bool:
+        topic = topic.casefold()
+        claim = claim.casefold()
+        if "repo rate" in topic:
+            return "repo rate" in claim or "policy repo" in claim
+        if any(term in topic for term in ("home loan", "emi", "floating rate")):
+            return any(term in claim for term in ("loan", "emi", "borrower"))
+        if "inflation" in topic:
+            return "inflation" in claim or "price" in claim
+        if "credit score" in topic:
+            return "credit score" in claim or "credit history" in claim
+        if "compound" in topic:
+            return "compound" in claim or "interest" in claim
+        if "tax" in topic:
+            return "tax" in claim or "gst" in claim
+        return True
+
+    def _fact_has_cited_support(
+        self,
+        fact: dict,
+        report: ResearchReport,
+    ) -> bool:
+        evidence = fact.get("evidence")
+        if not isinstance(evidence, list) or not evidence:
+            return False
+        report_urls = {
+            item.get("source_url")
+            for item in report.sources
+            if isinstance(item, dict)
+        }
+        return any(
+            isinstance(item, dict)
+            and item.get("support") == "supporting"
+            and isinstance(item.get("evidence_text"), str)
+            and item["evidence_text"].strip()
+            and item.get("source_url") in report_urls
+            for item in evidence
         )
 
     def _normalize_claim(self, claim: str) -> str:

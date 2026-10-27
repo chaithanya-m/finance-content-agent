@@ -87,6 +87,7 @@ def test_build_report_preserves_claim_status_evidence_and_sources(monkeypatch):
                     "evidence_text": "Policy repo rate is 5.25 per cent.",
                     "support": "supporting",
                     "published_at": "2026-10-01",
+                    "as_of_date": None,
                 }
             ],
             "notes": "Resolved using an official source.",
@@ -113,10 +114,12 @@ def test_build_report_preserves_claim_status_evidence_and_sources(monkeypatch):
             "source_name": "Reserve Bank of India",
             "source_url": "https://rbi.org.in",
             "published_at": "2026-10-01",
+            "as_of_date": None,
         },
         {
             "source_name": "Reserve Bank of India",
             "source_url": "https://example.com",
             "published_at": "2026-10-01",
+            "as_of_date": None,
         },
     ]
