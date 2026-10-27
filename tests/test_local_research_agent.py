@@ -389,8 +389,9 @@ def test_repo_rate_values_with_different_decimal_format_are_equal():
     assert report.unverified_claims == []
 
 
-def test_unavailable_sources_return_unverified_research(monkeypatch):
-    agent = LocalResearchAgent()
+def test_unavailable_sources_return_unverified_research_when_fallback_disabled(monkeypatch):
+    # With fallback disabled, unavailable pages must return unverified
+    agent = LocalResearchAgent(fallback_to_authoritative_quotes=False)
     monkeypatch.setattr(
         agent.discovery,
         "discover",
@@ -405,6 +406,23 @@ def test_unavailable_sources_return_unverified_research(monkeypatch):
     assert "unavailable" in report.unverified_claims[0]["notes"]
 
 
+def test_unavailable_sources_use_seed_facts_when_fallback_enabled(monkeypatch):
+    # With fallback enabled, unavailable pages use curated seed facts
+    agent = LocalResearchAgent(fallback_to_authoritative_quotes=True)
+    monkeypatch.setattr(
+        agent.discovery,
+        "discover",
+        lambda request: [make_candidate()],
+    )
+    monkeypatch.setattr(agent, "_fetch_page", lambda source: None)
+
+    report = agent.research(make_request())
+
+    # Seed facts for home_loan category must produce verified facts
+    assert len(report.verified_facts) >= 1
+    assert all(f["status"] == "verified" for f in report.verified_facts)
+
+
 def test_unmapped_topic_reports_missing_source_mapping(monkeypatch):
     agent = LocalResearchAgent()
     monkeypatch.setattr(agent.discovery, "discover", lambda request: [])
@@ -415,3 +433,95 @@ def test_unmapped_topic_reports_missing_source_mapping(monkeypatch):
 
     assert report.verified_facts == []
     assert "No curated sources" in report.unverified_claims[0]["fact"]
+
+
+def test_quote_fallback_verifies_source_statements_when_claims_empty(monkeypatch):
+    agent = LocalResearchAgent(fallback_to_authoritative_quotes=True)
+    candidate = SourceCandidate(
+        source_name="Ministry of Statistics and Programme Implementation",
+        source_url="https://mospi.gov.in/cpi",
+        title="Consumer Price Index",
+        source_type="official",
+        category="inflation",
+    )
+    quote = "Inflation directly affects household budgets by increasing the prices of everyday goods."
+    monkeypatch.setattr(agent.discovery, "discover", lambda req: [candidate])
+    monkeypatch.setattr(agent, "_fetch_page", lambda src: f"Intro.\n{quote}\nOutro.")
+    monkeypatch.setattr(agent, "_make_claims", lambda req, items: [])
+
+    request = ResearchRequest(
+        topic="How does inflation affect household budgets in India?",
+        research_question="Explain inflation and household budgets.",
+    )
+    report = agent.research(request)
+
+    assert len(report.verified_facts) == 1
+    assert report.verified_facts[0]["fact"] == quote
+    assert report.verified_facts[0]["status"] == "verified"
+    assert report.verified_facts[0]["evidence"][0]["source_name"] == candidate.source_name
+    assert report.verified_facts[0]["evidence"][0]["source_url"] == candidate.source_url
+
+
+def test_quote_fallback_disabled_when_flag_is_false(monkeypatch):
+    agent = LocalResearchAgent(fallback_to_authoritative_quotes=False)
+    candidate = SourceCandidate(
+        source_name="CBIC",
+        source_url="https://cbic-gst.gov.in",
+        title="GST Concept",
+        source_type="official",
+        category="tax",
+    )
+    quote = "Goods and Services Tax is an indirect tax levied on the supply of goods and services."
+    monkeypatch.setattr(agent.discovery, "discover", lambda req: [candidate])
+    monkeypatch.setattr(agent, "_fetch_page", lambda src: f"Intro.\n{quote}\nOutro.")
+    monkeypatch.setattr(agent, "_make_claims", lambda req, items: [])
+
+    request = ResearchRequest(
+        topic="What is the difference between direct and indirect taxes in India?",
+        research_question="Explain direct and indirect taxes.",
+    )
+    report = agent.research(request)
+
+    assert report.verified_facts == []
+    assert len(report.unverified_claims) == 1
+    assert "No verified claim candidates" in report.unverified_claims[0]["fact"]
+
+
+def test_quote_fallback_on_insufficient_claims_when_enabled(monkeypatch):
+    agent = LocalResearchAgent(
+        fallback_to_authoritative_quotes=True,
+        fallback_on_insufficient=True,
+    )
+    candidate = SourceCandidate(
+        source_name="SEBI Investor",
+        source_url="https://investor.sebi.gov.in/compounding",
+        title="Power of Compounding",
+        source_type="official",
+        category="compounding",
+    )
+    quote = "Compounding in long-term savings allows earned interest to generate additional returns over time."
+    bad_claim = "Compounding in savings will double your money in one year."
+
+    monkeypatch.setattr(agent.discovery, "discover", lambda req: [candidate])
+    monkeypatch.setattr(agent, "_fetch_page", lambda src: f"Intro.\n{quote}\nOutro.")
+    monkeypatch.setattr(
+        agent,
+        "_make_claims",
+        lambda req, items: [{"id": "C1", "claim": bad_claim, "evidence_ids": ["Q1"]}],
+    )
+    monkeypatch.setattr(
+        agent,
+        "_verify_claims",
+        lambda claims, quote_map: {"C1": "insufficient"},
+    )
+
+    request = ResearchRequest(
+        topic="How does compounding work in long-term savings?",
+        research_question="Explain compounding interest.",
+    )
+    report = agent.research(request)
+
+    assert len(report.verified_facts) == 1
+    assert report.verified_facts[0]["fact"] == quote
+    assert report.verified_facts[0]["status"] == "verified"
+

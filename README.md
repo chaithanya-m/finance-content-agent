@@ -163,8 +163,11 @@ ollama pull qwen2.5-coder:3b
 ### 3. Run the agent
 
 ```bash
-# Pick a random topic → research → generate dialogue script → save to DB
+# Pick a random topic from topics.json → research → generate dialogue script → save to DB
 python generate_dialogue.py
+
+# Autonomously brainstorm a fresh topic using AI (bypasses topics.json)
+python generate_dialogue.py --ai-topic
 
 # Use a specific topic
 python generate_dialogue.py --topic "How does inflation affect household budgets in India?"
@@ -185,7 +188,7 @@ python generate_dialogue.py --show 3
 ### 4. Run tests
 
 ```bash
-python -m pytest          # all 119 tests
+python -m pytest          # all 128 tests
 python -m pytest -v       # verbose
 ```
 
@@ -230,6 +233,7 @@ finance-content-agent/
 │   ├── research/
 │   │   ├── topic.py              ← Topic dataclass
 │   │   ├── topic_selector.py     ← picks highest-priority or random topic
+│   │   ├── topic_generator.py    ← AI topic ideator (bypasses topics.json)
 │   │   ├── research_request.py   ← ResearchRequest dataclass
 │   │   ├── research_report.py    ← ResearchReport dataclass
 │   │   ├── source_discovery.py   ← maps topics → curated source URLs
@@ -269,6 +273,7 @@ finance-content-agent/
     ├── test_local_research_agent.py       ← source parsing & claim drafting tests
     ├── test_research_content_generator.py ← Ollama carousel generator tests
     ├── test_research_pipeline.py          ← report assembly tests
+    ├── test_topic_generator.py            ← 5 AI topic generator tests
     └── test_topic_selector.py             ← 5 topic priority & random selection tests
 ```
 

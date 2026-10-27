@@ -201,6 +201,19 @@ def test_select_topic_random(workflow: DraftContentWorkflow):
     assert selected.title in {"Topic Alpha", "Topic Beta", "Topic Gamma"}
 
 
+@patch("src.draft_content_workflow.AITopicGenerator")
+def test_select_topic_use_ai(mock_gen_cls, workflow: DraftContentWorkflow):
+    mock_gen_cls.return_value.generate.return_value = Topic(
+        title="AI Generated Topic",
+        reason="Reason",
+        priority="high",
+    )
+
+    selected = workflow.select_topic(use_ai=True)
+    assert selected.title == "AI Generated Topic"
+    mock_gen_cls.return_value.generate.assert_called_once()
+
+
 # ── Tests for generate_drafts ─────────────────────────────────────────────────
 
 @patch("src.draft_content_workflow.LocalResearchAgent")
