@@ -11,6 +11,7 @@ from .dialogue_script_generator import DialogueScriptGenerator
 from .research.local_research_agent import LocalResearchAgent
 from .research.research_request import ResearchRequest
 from .research.topic import Topic
+from .research.topic_generator import AITopicGenerator
 from .research.topic_selector import TopicSelector
 from .research_content_generator import ResearchContentGenerator
 
@@ -87,10 +88,10 @@ class DraftContentWorkflow:
         requested_title: str | None = None,
         random_pick: bool = False,
         skip_titles: set[str] | None = None,
+        use_ai: bool = False,
     ) -> Topic:
-        topics = self._load_topics()
-
         if requested_title:
+            topics = self._load_topics()
             match = next(
                 (topic for topic in topics
                  if topic.title.casefold() == requested_title.strip().casefold()),
@@ -117,6 +118,10 @@ class DraftContentWorkflow:
         if skip_titles:
             completed |= skip_titles
 
+        if use_ai:
+            return AITopicGenerator().generate(exclude_titles=completed)
+
+        topics = self._load_topics()
         available = [topic for topic in topics if topic.title not in completed]
 
         if not available:

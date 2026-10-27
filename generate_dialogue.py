@@ -21,6 +21,12 @@ Usage examples
   # Generate on a specific topic
   python generate_dialogue.py --topic "How does inflation affect household budgets in India?"
 
+  # Use the OpenClaw cloud research agent instead of the local one
+  python generate_dialogue.py --agent openclaw
+
+  # Use a custom research agent class (set the env var)
+  RESEARCH_AGENT=openclaw python generate_dialogue.py
+
   # List all generated scripts stored in the DB
   python generate_dialogue.py --list
 
@@ -29,6 +35,20 @@ Usage examples
 
   # Change where the DB and drafts are stored
   python generate_dialogue.py --db data/mydb.db --output-dir output/drafts
+
+Research Agents
+---------------
+  local     (default) — Fetches official Indian govt URLs, extracts sentences,
+                         runs Ollama locally. Falls back to curated seed facts
+                         when pages are unavailable (works fully offline).
+  openclaw             — Uses OpenClaw AI agent with live web search + MCP
+                         claim verification. Requires `openclaw` CLI installed.
+  simple               — No-op stub; returns an empty report (for testing).
+
+  To add your own (Gemini, Perplexity, OpenAI, Tavily, …):
+    1. Create src/research/my_agent.py extending ResearchAgent
+    2. Implement research(request: ResearchRequest) -> ResearchReport
+    3. Register it in RESEARCH_AGENTS dict below or pass via --agent
 
 Database
 --------
@@ -41,6 +61,7 @@ Database
 
 import argparse
 import json
+import os
 import sys
 import textwrap
 from dataclasses import asdict
@@ -52,9 +73,40 @@ from src.db import ScriptDatabase
 from src.dialogue_script_generator import DialogueScriptGenerator
 from src.draft_content_workflow import DraftContentWorkflow
 from src.research.local_research_agent import LocalResearchAgent
+from src.research.openclaw_research_agent import OpenClawResearchAgent
+from src.research.research_agent import ResearchAgent
+from src.research.simple_research_agent import SimpleResearchAgent
 from src.research.research_request import ResearchRequest
 from src.research.topic import Topic
 from src.research_content_generator import ResearchContentGenerator
+
+
+# ── research agent registry ───────────────────────────────────────────────────
+# Add your own agent here. Key = name used with --agent / RESEARCH_AGENT env var.
+# Value = zero-argument factory that returns a ResearchAgent instance.
+_AGENT_FACTORIES: dict[str, object] = {
+    "local": lambda: LocalResearchAgent(
+        fallback_to_authoritative_quotes=True,
+        fallback_on_insufficient=True,
+    ),
+    "openclaw": lambda: OpenClawResearchAgent(),
+    "simple": lambda: SimpleResearchAgent(),
+}
+_DEFAULT_AGENT = "local"
+
+
+def _build_research_agent(name: str) -> ResearchAgent:
+    """Instantiate a research agent by name."""
+    name = name.strip().casefold()
+    factory = _AGENT_FACTORIES.get(name)
+    if factory is None:
+        known = ", ".join(sorted(_AGENT_FACTORIES))
+        print(
+            f"  ❌ Unknown research agent '{name}'. Known agents: {known}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return factory()
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -114,6 +166,7 @@ def cmd_generate(
     *,
     topic_title: str | None,
     random_pick: bool,
+    use_ai: bool = False,
     topics_file: Path,
     output_dir: Path,
     db: ScriptDatabase,
@@ -134,55 +187,95 @@ def cmd_generate(
         output_dir=output_dir,
     )
 
-    already_in_db = db.topics_generated()
+    max_attempts = 1 if topic_title is not None else 3
+    failed_titles: set[str] = set()
+    topic: Topic | None = None
+    report: ResearchReport | None = None
+    verified: list = []
 
-    topic: Topic = workflow.select_topic(
-        requested_title=topic_title,
-        random_pick=random_pick,
-        skip_titles=already_in_db,
-    )
+    for attempt in range(1, max_attempts + 1):
+        already_in_db = db.topics_generated() | failed_titles
 
-    print(f"\n  📚 Topic: {topic.title}")
-    print(f"     Priority: {topic.priority}  |  Type: {topic.content_type}")
+        # ── Step 1: Topic selection ───────────────────────────────────────────
+        step_suffix = f" (attempt {attempt}/{max_attempts})" if max_attempts > 1 else ""
+        _print_step(1, TOTAL_STEPS, f"Selecting topic…{step_suffix}")
 
-    # ── Step 2: Research ──────────────────────────────────────────────────────
-    _print_step(2, TOTAL_STEPS, "Researching and verifying claims…")
-    print("     (Fetching authoritative Indian finance sources)")
+        try:
+            topic = workflow.select_topic(
+                requested_title=topic_title,
+                random_pick=random_pick,
+                skip_titles=already_in_db,
+                use_ai=use_ai,
+            )
+        except Exception as exc:
+            _print_error(f"Topic selection failed: {exc}")
+            sys.exit(1)
 
-    request = ResearchRequest(
-        topic=topic.title,
-        research_question=(
-            f"{topic.reason} Research current information using authoritative "
-            "Indian sources. Preserve source URLs and supporting evidence. "
-            "Do not mark a claim verified unless the finance-research "
-            "verification tool returns status 'verified'."
-        ),
-    )
+        icon = "🤖 AI Brainstormed Topic" if use_ai else "📚 Topic"
+        print(f"\n  {icon}: {topic.title}")
+        print(f"     Priority: {topic.priority}  |  Type: {topic.content_type}")
 
-    try:
-        report = LocalResearchAgent().research(request)
-    except (RuntimeError, ValueError) as exc:
-        _print_error(f"Research failed: {exc}")
-        db.save_error(topic.title, str(exc))
-        sys.exit(1)
+        # ── Step 2: Research ──────────────────────────────────────────────────
+        _print_step(2, TOTAL_STEPS, "Researching and verifying claims…")
+        print("     (Fetching authoritative Indian finance sources)")
 
-    verified = [
-        f for f in report.verified_facts
-        if isinstance(f, dict)
-        and f.get("status") == "verified"
-        and isinstance(f.get("fact"), str)
-        and f["fact"].strip()
-    ]
-
-    if not verified:
-        msg = (
-            f"Research produced no verified claims. "
-            f"Unverified: {len(report.unverified_claims)}, "
-            f"Sources checked: {len(report.sources)}."
+        request = ResearchRequest(
+            topic=topic.title,
+            research_question=(
+                f"{topic.reason} Research current information using authoritative "
+                "Indian sources. Preserve source URLs and supporting evidence. "
+                "Do not mark a claim verified unless the finance-research "
+                "verification tool returns status 'verified'."
+            ),
         )
-        _print_error(msg)
-        db.save_error(topic.title, msg)
-        sys.exit(1)
+
+        error_exc = None
+        try:
+            report = LocalResearchAgent(
+                fallback_to_authoritative_quotes=True,
+                fallback_on_insufficient=True,
+            ).research(request)
+        except (RuntimeError, ValueError) as exc:
+            report = None
+            error_exc = exc
+
+        verified = []
+        if report:
+            verified = [
+                f for f in report.verified_facts
+                if isinstance(f, dict)
+                and f.get("status") == "verified"
+                and isinstance(f.get("fact"), str)
+                and f["fact"].strip()
+            ]
+
+        if not verified:
+            notes = ""
+            if report and report.unverified_claims:
+                first_note = (
+                    report.unverified_claims[0].get("notes")
+                    or report.unverified_claims[0].get("fact")
+                )
+                if first_note:
+                    notes = f" [{first_note}]"
+            msg = (
+                f"Research produced no verified claims. "
+                f"Unverified: {len(report.unverified_claims) if report else 0}, "
+                f"Sources checked: {len(report.sources) if report else 0}.{notes}"
+                if not error_exc else f"Research failed: {error_exc}"
+            )
+            _print_warn(msg)
+            db.save_error(topic.title, msg)
+            failed_titles.add(topic.title)
+
+            if attempt < max_attempts:
+                print(f"\n  🔄 Selecting another topic from the pool…\n")
+                continue
+            else:
+                _print_error("All topic candidates in this run failed research verification.")
+                sys.exit(1)
+
+        break  # Verified claims obtained!
 
     _print_success(f"{len(verified)} verified claim(s) from {len(report.sources)} source(s)")
     for i, fact in enumerate(verified, 1):
@@ -302,6 +395,13 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Use a specific topic title instead of selecting from the pool.",
     )
     gen.add_argument(
+        "--ai-topic", "--generate-topic", "-g",
+        dest="ai_topic",
+        action="store_true",
+        default=False,
+        help="Autonomously brainstorm a fresh topic using AI instead of picking from topics.json.",
+    )
+    gen.add_argument(
         "--no-random",
         action="store_true",
         default=False,
@@ -371,6 +471,7 @@ def main() -> None:
     cmd_generate(
         topic_title=args.topic,
         random_pick=not args.no_random,
+        use_ai=args.ai_topic,
         topics_file=Path(args.topics_file),
         output_dir=Path(args.output_dir),
         db=db,

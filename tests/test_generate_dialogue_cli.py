@@ -118,14 +118,22 @@ def test_parser_custom_flags():
     parser = generate_dialogue._build_parser()
     args = parser.parse_args([
         "--topic", "Custom Topic",
+        "--ai-topic",
         "--no-random",
         "--no-files",
         "--db", "custom.db",
     ])
     assert args.topic == "Custom Topic"
+    assert args.ai_topic is True
     assert args.no_random is True
     assert args.no_files is True
     assert args.db == "custom.db"
+
+
+def test_parser_generate_topic_alias():
+    parser = generate_dialogue._build_parser()
+    args = parser.parse_args(["--generate-topic"])
+    assert args.ai_topic is True
 
 
 # ── Query Command Tests ───────────────────────────────────────────────────────
@@ -206,6 +214,41 @@ def test_cmd_generate_success_with_files(
     assert (draft_dir / "dialogue_carousel.md").exists()
     assert (draft_dir / "dialogue_video.json").exists()
     assert (draft_dir / "dialogue_video.md").exists()
+
+
+@patch("generate_dialogue.LocalResearchAgent")
+@patch("generate_dialogue.DialogueScriptGenerator")
+@patch("src.draft_content_workflow.AITopicGenerator")
+def test_cmd_generate_with_ai_topic(
+    mock_ai_gen,
+    mock_dialogue_cls,
+    mock_research_cls,
+    tmp_db: ScriptDatabase,
+    sample_topics_file: Path,
+    tmp_path: Path,
+    capsys,
+):
+    output_dir = tmp_path / "drafts"
+    mock_ai_gen.return_value.generate.return_value = Topic(
+        title="AI Brainstormed Repo Rate Question",
+        reason="Explain repo rates",
+        priority="high",
+    )
+    mock_research_cls.return_value.research.return_value = _sample_report("AI Brainstormed Repo Rate Question")
+    mock_dialogue_cls.return_value.generate.return_value = _sample_script("AI Brainstormed Repo Rate Question")
+
+    generate_dialogue.cmd_generate(
+        topic_title=None,
+        random_pick=False,
+        use_ai=True,
+        topics_file=sample_topics_file,
+        output_dir=output_dir,
+        db=tmp_db,
+        save_files=False,
+    )
+
+    captured = capsys.readouterr().out
+    assert "AI Brainstormed Topic: AI Brainstormed Repo Rate Question" in captured
 
 
 @patch("generate_dialogue.LocalResearchAgent")
@@ -295,6 +338,60 @@ def test_cmd_generate_no_verified_facts(
     assert len(rows) == 1
     assert rows[0]["status"] == "failed"
     assert "no verified claims" in rows[0]["error"]
+
+
+@patch("generate_dialogue.LocalResearchAgent")
+@patch("generate_dialogue.DialogueScriptGenerator")
+def test_cmd_generate_auto_retry_on_unverified_topic(
+    mock_dialogue_cls,
+    mock_research_cls,
+    tmp_db: ScriptDatabase,
+    tmp_path: Path,
+    capsys,
+):
+    # Two topics configured
+    topics = [
+        {"title": "Unverifiable Topic", "reason": "Reason", "priority": "high"},
+        {"title": "Valid Topic", "reason": "Reason", "priority": "medium"},
+    ]
+    topics_file = tmp_path / "two_topics.json"
+    topics_file.write_text(json.dumps(topics), encoding="utf-8")
+
+    empty_report = ResearchReport(
+        topic="Unverifiable Topic",
+        research_question="Question?",
+        verified_facts=[],
+        unverified_claims=[{"fact": "unverified"}],
+        sources=[{"source_name": "src", "source_url": "https://rbi.org.in/"}],
+    )
+    valid_report = _sample_report("Valid Topic")
+    valid_script = _sample_script("Valid Topic")
+
+    # First topic fails research, second topic succeeds
+    mock_research_cls.return_value.research.side_effect = [empty_report, valid_report]
+    mock_dialogue_cls.return_value.generate.return_value = valid_script
+
+    generate_dialogue.cmd_generate(
+        topic_title=None,  # Autonomous mode
+        random_pick=False,
+        topics_file=topics_file,
+        output_dir=tmp_path / "drafts",
+        db=tmp_db,
+        save_files=False,
+    )
+
+    captured = capsys.readouterr().out
+    assert "Selecting another topic from the pool" in captured
+    assert "Valid Topic" in captured
+
+    # Database recorded both the failure and the final success
+    rows = tmp_db.list_all()
+    assert len(rows) == 2
+    # Newest is first
+    assert rows[0]["topic"] == "Valid Topic"
+    assert rows[0]["status"] == "ready"
+    assert rows[1]["topic"] == "Unverifiable Topic"
+    assert rows[1]["status"] == "failed"
 
 
 # ── Main Entrypoint Routing Tests ─────────────────────────────────────────────

@@ -7,7 +7,7 @@ HIGH_AUTHORITY_DOMAINS = {
     "rbi.org.in", "sebi.gov.in", "incometax.gov.in",
     "incometaxindia.gov.in", "mof.gov.in", "dea.gov.in",
     "financialservices.gov.in", "mospi.gov.in", "pib.gov.in",
-    "cbic.gov.in", "nhb.org.in", "indiabudget.gov.in",
+    "cbic.gov.in", "cbic-gst.gov.in", "nhb.org.in", "indiabudget.gov.in",
     "nsiindia.gov.in",
 }
 

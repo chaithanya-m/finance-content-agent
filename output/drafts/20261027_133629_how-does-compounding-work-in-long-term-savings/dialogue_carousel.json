@@ -1,0 +1,210 @@
+{
+  "topic": "How does compounding work in long-term savings?",
+  "format_hint": "both",
+  "language": "conversational Indian English",
+  "guide_persona": "Riya — a friendly, knowledgeable 28-year-old who works in finance and loves explaining money concepts to beginners.",
+  "learner_persona": "Arjun — a curious 16-year-old who has just started paying attention to money and asks honest, relatable questions.",
+  "dialogue": [
+    {
+      "speaker": "LEARNER",
+      "text": "Arjun: Hey Riya, I've been saving some money for college, but I'm not sure how it's going to grow. Can you explain compounding to me?",
+      "arc_stage": "hook"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your coins. Now, let's say you put in $100 and every year, the bank gives you 5% interest on your money. At the end of the first year, you'll have $105. But here's the cool part - the bank also gives you interest on that $5! So by the end of the second year, you'll have $110.50. And the next year, you'll get interest on that $110.50, making it even more money!",
+      "arc_stage": "scenario"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Compounding is like magic! It's when you earn interest not just on the money you put in at the start, but also on the interest you've already earned. It's like getting a little bonus for every little bit you save!",
+      "arc_stage": "explanation"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Let's say you save $100 a year for 10 years at a 5% interest rate. By the end of 10 years, you'll have $1,628.89! That's a lot more than if you only saved $100 a year without any interest. It's like getting a free ride on the money train!",
+      "arc_stage": "example"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: If you don't understand compounding, you might miss out on a lot of money. It's like not taking the time to grow your piggy bank. But if you do understand it, you can save more money and have more money to spend on things you want!",
+      "arc_stage": "consequences"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: The next time you're saving money, remember to think about compounding. It can make your money grow faster and help you reach your goals!",
+      "arc_stage": "takeaway"
+    }
+  ],
+  "carousel_slides": [
+    {
+      "slide_number": 1,
+      "arc_stage": "hook",
+      "title": "Hook: How does compounding work in long-term savings?",
+      "guide_line": "",
+      "learner_line": "Arjun: Hey Riya, I've been saving some money for college, but I'm not sure how it's going to grow. Can you explain compounding to me?",
+      "visual_prompt": "Bright, warm opening card. Arjun looks puzzled, holding a phone showing a news headline about the topic. Speech bubble with the hook question. Clean typography on a light background.",
+      "key_fact": "",
+      "on_screen_text": "\"Arjun: Hey Riya, I've been saving some money for college, but I'm not sure how it's going to grow. Can you explain compounding to me?\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 2,
+      "arc_stage": "scenario",
+      "title": "Scenario: Imagine saving money with interest.",
+      "guide_line": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your coins. Now, let's say you put in $100 and every year, the bank gives you 5% interest on your money. At the end of the first year, you'll have $105. But here's the cool part - the bank also gives you interest on that $5! So by the end of the second year, you'll have $110.50. And the next year, you'll get interest on that $110.50, making it even more money!",
+      "learner_line": "",
+      "visual_prompt": "Split-panel illustration: left side shows a common everyday situation related to the topic (e.g., receiving a bank statement, paying an EMI), right side shows Arjun looking uncertain. Conversational speech bubbles.",
+      "key_fact": "",
+      "on_screen_text": "Riya: \"Riya: Sure, Arjun! Imagine you have a piggy bank where you put your coins. Now, let's say you put in $100 and every year, the bank gives you 5% interest on your money. At the end of the first year, you'll have $105. But here's the cool part - the bank also gives you interest on that $5! So by the end of the second year, you'll have $110.50. And the next year, you'll get interest on that $110.50, making it even more money!\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 3,
+      "arc_stage": "explanation",
+      "title": "Explanation: Compounding is when you earn interest on your savings.",
+      "guide_line": "Riya: Compounding is like magic! It's when you earn interest not just on the money you put in at the start, but also on the interest you've already earned. It's like getting a little bonus for every little bit you save!",
+      "learner_line": "",
+      "visual_prompt": "Riya (GUIDE) with a friendly smile, pointing to a simple diagram or infographic that illustrates the concept. Clean layout, no clutter. Key term highlighted in a coloured box.",
+      "key_fact": "Compounding allows savings to grow substantially over a period of time as it involves earning interest not only on the initial amount of money (the principal) but also on the accumulated interest over a period of time.",
+      "on_screen_text": "Riya: \"Riya: Compounding is like magic! It's when you earn interest not just on the money you put in at the start, but also on the interest you've already earned. It's like getting a little bonus for every little bit you save!\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 4,
+      "arc_stage": "example",
+      "title": "Example: How much money do you have after 10 years with compounding?",
+      "guide_line": "Riya: Let's say you save $100 a year for 10 years at a 5% interest rate. By the end of 10 years, you'll have $1,628.89! That's a lot more than if you only saved $100 a year without any interest. It's like getting a free ride on the money train!",
+      "learner_line": "",
+      "visual_prompt": "Clean worked-example card with simple numbers and a visual calculator or table. Both characters react — Arjun has an 'aha!' expression. Numbers are large and readable.",
+      "key_fact": "Grow Your Money with Power of Compounding Compounding allows savings to grow substantially over a period of time as it involves earning interest not only on the initial amount of money (the principal) but also on the accumulated interest over a period of time.",
+      "on_screen_text": "Riya: \"Riya: Let's say you save $100 a year for 10 years at a 5% interest rate. By the end of 10 years, you'll have $1,628.89! That's a lot more than if you only saved $100 a year without any interest. It's like getting a free ride on the money train!\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 5,
+      "arc_stage": "consequences",
+      "title": "Consequences: Miss out on money without understanding compounding.",
+      "guide_line": "Riya: If you don't understand compounding, you might miss out on a lot of money. It's like not taking the time to grow your piggy bank. But if you do understand it, you can save more money and have more money to spend on things you want!",
+      "learner_line": "",
+      "visual_prompt": "Two-path illustration: one path shows a person making an informed decision, the other shows the consequence of not knowing. Friendly, non-scary visual. No doom and gloom.",
+      "key_fact": "Content Grow Your Money with Power of Compounding Compounding allows savings to grow substantially over a period of time as it involves earning interest not only on the initial amount of money (the principal) but also on the accumulated interest over a period of time.",
+      "on_screen_text": "Riya: \"Riya: If you don't understand compounding, you might miss out on a lot of money. It's like not taking the time to grow your piggy bank. But if you do understand it, you can save more money and have more money to spend on things you want!\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 6,
+      "arc_stage": "takeaway",
+      "title": "Takeaway: Remember to think about compounding when saving money.",
+      "guide_line": "Riya: The next time you're saving money, remember to think about compounding. It can make your money grow faster and help you reach your goals!",
+      "learner_line": "",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette.",
+      "key_fact": "",
+      "on_screen_text": "Riya: \"Riya: The next time you're saving money, remember to think about compounding. It can make your money grow faster and help you reach your goals!\"",
+      "footnote": "Source: https://investor.sebi.gov.in/moneymatters-powerofcom.html"
+    },
+    {
+      "slide_number": 7,
+      "arc_stage": "cta",
+      "title": "Save & Share 📌",
+      "guide_line": "Follow for more money basics — one concept at a time. Save this post so you can come back to it!",
+      "learner_line": "",
+      "visual_prompt": "Bright, positive closing card. Both Riya and Arjun smile and wave. Large bold text: 'Follow @[handle] for money basics'. Instagram-style save and follow icons.",
+      "key_fact": "",
+      "on_screen_text": "Follow for more money basics 💡\nSave this post for later 📌",
+      "footnote": "Educational content only; not personalised financial advice."
+    }
+  ],
+  "video_scenes": [
+    {
+      "scene_number": 1,
+      "arc_stage": "hook",
+      "duration_seconds": 4,
+      "visual_direction": "Vertical 9:16 opening. Arjun sits at a table scrolling his phone. A news notification pops up. He looks confused. Riya walks in. Energetic music starts softly.",
+      "guide_voiceover": "",
+      "learner_voiceover": "Arjun: Hey Riya, I've been saving some money for college, but I'm not sure how it's going to grow. Can you explain compounding to me?",
+      "on_screen_text": "Arjun: Hey Riya, I've been saving some money for college, but I'm not sure how it's going to grow. Can you explain compounding to me?",
+      "visual_prompt": "Bright, warm opening card. Arjun looks puzzled, holding a phone showing a news headline about the topic. Speech bubble with the hook question. Clean typography on a light background."
+    },
+    {
+      "scene_number": 2,
+      "arc_stage": "scenario",
+      "duration_seconds": 5,
+      "visual_direction": "Side-by-side animation: Arjun's everyday situation on screen. Riya narrates from a corner overlay. Simple, friendly animation.",
+      "guide_voiceover": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your coins. Now, let's say you put in $100 and every year, the bank gives you 5% interest on your money. At the end of the first year, you'll have $105. But here's the cool part - the bank also gives you interest on that $5! So by the end of the second year, you'll have $110.50. And the next year, you'll get interest on that $110.50, making it even more money!",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Sure, Arjun! Imagine you have a piggy bank where you put your coins. Now, let's say you put in $100 and every year, the bank gives you 5% interest on your money. At the end of the first year, you'll have $105. But here's the cool part - the bank also gives you interest on that $5! So by the end of the second year, you'll have $110.50. And the next year, you'll get interest on that $110.50, making it even more money!",
+      "visual_prompt": "Split-panel illustration: left side shows a common everyday situation related to the topic (e.g., receiving a bank statement, paying an EMI), right side shows Arjun looking uncertain. Conversational speech bubbles."
+    },
+    {
+      "scene_number": 3,
+      "arc_stage": "explanation",
+      "duration_seconds": 6,
+      "visual_direction": "Riya stands in front of a simple animated diagram that appears on screen as she speaks. The key term animates in as text. Calm, clear background music.",
+      "guide_voiceover": "Riya: Compounding is like magic! It's when you earn interest not just on the money you put in at the start, but also on the interest you've already earned. It's like getting a little bonus for every little bit you save!",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Compounding is like magic! It's when you earn interest not just on the money you put in at the start, but also on the interest you've already earned. It's like getting a little bonus for every little bit you save!",
+      "visual_prompt": "Riya (GUIDE) with a friendly smile, pointing to a simple diagram or infographic that illustrates the concept. Clean layout, no clutter. Key term highlighted in a coloured box."
+    },
+    {
+      "scene_number": 4,
+      "arc_stage": "example",
+      "duration_seconds": 7,
+      "visual_direction": "Screen shows a simple worked example (numbers animate in). Arjun reacts with 'aha!' expression. Cut to Riya confirming. Upbeat, light music.",
+      "guide_voiceover": "Riya: Let's say you save $100 a year for 10 years at a 5% interest rate. By the end of 10 years, you'll have $1,628.89! That's a lot more than if you only saved $100 a year without any interest. It's like getting a free ride on the money train!",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Let's say you save $100 a year for 10 years at a 5% interest rate. By the end of 10 years, you'll have $1,628.89! That's a lot more than if you only saved $100 a year without any interest. It's like getting a free ride on the money train!",
+      "visual_prompt": "Clean worked-example card with simple numbers and a visual calculator or table. Both characters react — Arjun has an 'aha!' expression. Numbers are large and readable."
+    },
+    {
+      "scene_number": 5,
+      "arc_stage": "consequences",
+      "duration_seconds": 6,
+      "visual_direction": "Split screen: animated path A (informed decision) vs path B (uninformed). Simple, relatable visuals. Riya voiceover explains.",
+      "guide_voiceover": "Riya: If you don't understand compounding, you might miss out on a lot of money. It's like not taking the time to grow your piggy bank. But if you do understand it, you can save more money and have more money to spend on things you want!",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: If you don't understand compounding, you might miss out on a lot of money. It's like not taking the time to grow your piggy bank. But if you do understand it, you can save more money and have more money to spend on things you want!",
+      "visual_prompt": "Two-path illustration: one path shows a person making an informed decision, the other shows the consequence of not knowing. Friendly, non-scary visual. No doom and gloom."
+    },
+    {
+      "scene_number": 6,
+      "arc_stage": "takeaway",
+      "duration_seconds": 5,
+      "visual_direction": "Closing shot: both Riya and Arjun on screen. Checklist animates in. Riya smiles and gestures to follow. Upbeat closing music. Call to action text appears.",
+      "guide_voiceover": "Riya: The next time you're saving money, remember to think about compounding. It can make your money grow faster and help you reach your goals!",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: The next time you're saving money, remember to think about compounding. It can make your money grow faster and help you reach your goals!",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette."
+    },
+    {
+      "scene_number": 7,
+      "arc_stage": "cta",
+      "duration_seconds": 3,
+      "visual_direction": "Closing card. Both characters on screen. Call-to-action text animates in. Upbeat music fades out.",
+      "guide_voiceover": "Follow for more money basics — one concept at a time!",
+      "learner_voiceover": "",
+      "on_screen_text": "Follow for more money basics. Save this! 📌",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette."
+    }
+  ],
+  "aspect_ratio": "9:16",
+  "estimated_duration_seconds": 36,
+  "verified_facts": [
+    "Compounding allows savings to grow substantially over a period of time as it involves earning interest not only on the initial amount of money (the principal) but also on the accumulated interest over a period of time.",
+    "Grow Your Money with Power of Compounding Compounding allows savings to grow substantially over a period of time as it involves earning interest not only on the initial amount of money (the principal) but also on the accumulated interest over a period of time.",
+    "Content Grow Your Money with Power of Compounding Compounding allows savings to grow substantially over a period of time as it involves earning interest not only on the initial amount of money (the principal) but also on the accumulated interest over a period of time."
+  ],
+  "sources": [
+    "https://investor.sebi.gov.in/moneymatters-powerofcom.html",
+    "https://investor.sebi.gov.in/calculators/index.html"
+  ],
+  "caption": "Educational content only; this is not personalised financial advice.",
+  "call_to_action": "Follow for more money basics. Save this for later! 📌",
+  "hashtags": [
+    "#FinancialLiteracy",
+    "#MoneyBasics",
+    "#IndiaFinance",
+    "#PersonalFinance",
+    "#LearnWithRiya"
+  ]
+}
