@@ -1,0 +1,208 @@
+{
+  "topic": "Why banks must disclose EMI reset impacts to home loan borrowers",
+  "format_hint": "both",
+  "language": "conversational Indian English",
+  "guide_persona": "Riya — a friendly, knowledgeable 28-year-old who works in finance and loves explaining money concepts to beginners.",
+  "learner_persona": "Arjun — a curious 16-year-old who has just started paying attention to money and asks honest, relatable questions.",
+  "dialogue": [
+    {
+      "speaker": "LEARNER",
+      "text": "Arjun: Hey Riya, what's the deal with banks and EMI resets on home loans?",
+      "arc_stage": "hook"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Well, Arjun, imagine you have a big piggy bank for your house. Now, imagine the bank keeps changing the rules about how much money you need to put in each week. That's kind of like what happens with your home loan EMI.",
+      "arc_stage": "scenario"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: When the bank decides to change the rules (that's what we call a 'reset'), it's like they're saying you need to put in more money each week to keep your house. It's important to know this because it can affect how much you can afford to spend on other things.",
+      "arc_stage": "explanation"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: Let's say you have a home loan with an EMI of $1,000 per month. If the bank decides to increase the EMI, it might go up to $1,200 per month. That's a big difference! Now, you might have to cut back on other expenses to stay on top of your payments.",
+      "arc_stage": "example"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: If you don't understand this, it can be like not knowing when to put more money in your piggy bank. It can make it harder to save for other things you want, like a new bike or a trip to the beach.",
+      "arc_stage": "consequences"
+    },
+    {
+      "speaker": "GUIDE",
+      "text": "Riya: The best thing you can do is to ask your bank about EMI resets and how they affect your payments. It's like asking your parents about when you need to put more money in your piggy bank.",
+      "arc_stage": "takeaway"
+    }
+  ],
+  "carousel_slides": [
+    {
+      "slide_number": 1,
+      "arc_stage": "hook",
+      "title": "Why Banks Must Disclose EMI Reset Impacts to Home Loan Borrowers",
+      "guide_line": "",
+      "learner_line": "Arjun: Hey Riya, what's the deal with banks and EMI resets on home loans?",
+      "visual_prompt": "Bright, warm opening card. Arjun looks puzzled, holding a phone showing a news headline about the topic. Speech bubble with the hook question. Clean typography on a light background.",
+      "key_fact": "",
+      "on_screen_text": "\"Arjun: Hey Riya, what's the deal with banks and EMI resets on home loans?\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 2,
+      "arc_stage": "scenario",
+      "title": "Imagine Your Home Loan EMI Changes",
+      "guide_line": "Riya: Well, Arjun, imagine you have a big piggy bank for your house. Now, imagine the bank keeps changing the rules about how much money you need to put in each week. That's kind of like what happens with your home loan EMI.",
+      "learner_line": "",
+      "visual_prompt": "Split-panel illustration: left side shows a common everyday situation related to the topic (e.g., receiving a bank statement, paying an EMI), right side shows Arjun looking uncertain. Conversational speech bubbles.",
+      "key_fact": "",
+      "on_screen_text": "Riya: \"Riya: Well, Arjun, imagine you have a big piggy bank for your house. Now, imagine the bank keeps changing the rules about how much money you need to put in each week. That's kind of like what happens with your home loan EMI.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 3,
+      "arc_stage": "explanation",
+      "title": "Understanding EMI Resets",
+      "guide_line": "Riya: When the bank decides to change the rules (that's what we call a 'reset'), it's like they're saying you need to put in more money each week to keep your house. It's important to know this because it can affect how much you can afford to spend on other things.",
+      "learner_line": "",
+      "visual_prompt": "Riya (GUIDE) with a friendly smile, pointing to a simple diagram or infographic that illustrates the concept. Clean layout, no clutter. Key term highlighted in a coloured box.",
+      "key_fact": "UCBs must check borrowers' repayment capacity for floating-rate housing loans, including possible EMI increases when benchmark rates rise.",
+      "on_screen_text": "Riya: \"Riya: When the bank decides to change the rules (that's what we call a 'reset'), it's like they're saying you need to put in more money each week to keep your house. It's important to know this because it can affect how much you can afford to spend on other things.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 4,
+      "arc_stage": "example",
+      "title": "Example of EMI Increase",
+      "guide_line": "Riya: Let's say you have a home loan with an EMI of $1,000 per month. If the bank decides to increase the EMI, it might go up to $1,200 per month. That's a big difference! Now, you might have to cut back on other expenses to stay on top of your payments.",
+      "learner_line": "",
+      "visual_prompt": "Clean worked-example card with simple numbers and a visual calculator or table. Both characters react — Arjun has an 'aha!' expression. Numbers are large and readable.",
+      "key_fact": "UCBs are advised to have a policy for resetting floating rates on EMI-based housing loans.",
+      "on_screen_text": "Riya: \"Riya: Let's say you have a home loan with an EMI of $1,000 per month. If the bank decides to increase the EMI, it might go up to $1,200 per month. That's a big difference! Now, you might have to cut back on other expenses to stay on top of your payments.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 5,
+      "arc_stage": "consequences",
+      "title": "Consequences of Not Understanding EMI Resets",
+      "guide_line": "Riya: If you don't understand this, it can be like not knowing when to put more money in your piggy bank. It can make it harder to save for other things you want, like a new bike or a trip to the beach.",
+      "learner_line": "",
+      "visual_prompt": "Two-path illustration: one path shows a person making an informed decision, the other shows the consequence of not knowing. Friendly, non-scary visual. No doom and gloom.",
+      "key_fact": "UCBs are advised to have a policy for resetting floating rates on EMI-based housing loans.",
+      "on_screen_text": "Riya: \"Riya: If you don't understand this, it can be like not knowing when to put more money in your piggy bank. It can make it harder to save for other things you want, like a new bike or a trip to the beach.\"",
+      "footnote": ""
+    },
+    {
+      "slide_number": 6,
+      "arc_stage": "takeaway",
+      "title": "Ask Your Bank About EMI Resets",
+      "guide_line": "Riya: The best thing you can do is to ask your bank about EMI resets and how they affect your payments. It's like asking your parents about when you need to put more money in your piggy bank.",
+      "learner_line": "",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette.",
+      "key_fact": "",
+      "on_screen_text": "Riya: \"Riya: The best thing you can do is to ask your bank about EMI resets and how they affect your payments. It's like asking your parents about when you need to put more money in your piggy bank.\"",
+      "footnote": "Source: https://rbi.org.in/Scripts/NotificationUser.aspx?Id=12655&Mode=0"
+    },
+    {
+      "slide_number": 7,
+      "arc_stage": "cta",
+      "title": "Save & Share 📌",
+      "guide_line": "Follow for more money basics — one concept at a time. Save this post so you can come back to it!",
+      "learner_line": "",
+      "visual_prompt": "Bright, positive closing card. Both Riya and Arjun smile and wave. Large bold text: 'Follow @[handle] for money basics'. Instagram-style save and follow icons.",
+      "key_fact": "",
+      "on_screen_text": "Follow for more money basics 💡\nSave this post for later 📌",
+      "footnote": "Educational content only; not personalised financial advice."
+    }
+  ],
+  "video_scenes": [
+    {
+      "scene_number": 1,
+      "arc_stage": "hook",
+      "duration_seconds": 4,
+      "visual_direction": "Vertical 9:16 opening. Arjun sits at a table scrolling his phone. A news notification pops up. He looks confused. Riya walks in. Energetic music starts softly.",
+      "guide_voiceover": "",
+      "learner_voiceover": "Arjun: Hey Riya, what's the deal with banks and EMI resets on home loans?",
+      "on_screen_text": "Arjun: Hey Riya, what's the deal with banks and EMI resets on home loans?",
+      "visual_prompt": "Bright, warm opening card. Arjun looks puzzled, holding a phone showing a news headline about the topic. Speech bubble with the hook question. Clean typography on a light background."
+    },
+    {
+      "scene_number": 2,
+      "arc_stage": "scenario",
+      "duration_seconds": 5,
+      "visual_direction": "Side-by-side animation: Arjun's everyday situation on screen. Riya narrates from a corner overlay. Simple, friendly animation.",
+      "guide_voiceover": "Riya: Well, Arjun, imagine you have a big piggy bank for your house. Now, imagine the bank keeps changing the rules about how much money you need to put in each week. That's kind of like what happens with your home loan EMI.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Well, Arjun, imagine you have a big piggy bank for your house. Now, imagine the bank keeps changing the rules about how much money you need to put in each week. That's kind of like what happens with your home loan EMI.",
+      "visual_prompt": "Split-panel illustration: left side shows a common everyday situation related to the topic (e.g., receiving a bank statement, paying an EMI), right side shows Arjun looking uncertain. Conversational speech bubbles."
+    },
+    {
+      "scene_number": 3,
+      "arc_stage": "explanation",
+      "duration_seconds": 6,
+      "visual_direction": "Riya stands in front of a simple animated diagram that appears on screen as she speaks. The key term animates in as text. Calm, clear background music.",
+      "guide_voiceover": "Riya: When the bank decides to change the rules (that's what we call a 'reset'), it's like they're saying you need to put in more money each week to keep your house. It's important to know this because it can affect how much you can afford to spend on other things.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: When the bank decides to change the rules (that's what we call a 'reset'), it's like they're saying you need to put in more money each week to keep your house. It's important to know this because it can affect how much you can afford to spend on other things.",
+      "visual_prompt": "Riya (GUIDE) with a friendly smile, pointing to a simple diagram or infographic that illustrates the concept. Clean layout, no clutter. Key term highlighted in a coloured box."
+    },
+    {
+      "scene_number": 4,
+      "arc_stage": "example",
+      "duration_seconds": 7,
+      "visual_direction": "Screen shows a simple worked example (numbers animate in). Arjun reacts with 'aha!' expression. Cut to Riya confirming. Upbeat, light music.",
+      "guide_voiceover": "Riya: Let's say you have a home loan with an EMI of $1,000 per month. If the bank decides to increase the EMI, it might go up to $1,200 per month. That's a big difference! Now, you might have to cut back on other expenses to stay on top of your payments.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: Let's say you have a home loan with an EMI of $1,000 per month. If the bank decides to increase the EMI, it might go up to $1,200 per month. That's a big difference! Now, you might have to cut back on other expenses to stay on top of your payments.",
+      "visual_prompt": "Clean worked-example card with simple numbers and a visual calculator or table. Both characters react — Arjun has an 'aha!' expression. Numbers are large and readable."
+    },
+    {
+      "scene_number": 5,
+      "arc_stage": "consequences",
+      "duration_seconds": 6,
+      "visual_direction": "Split screen: animated path A (informed decision) vs path B (uninformed). Simple, relatable visuals. Riya voiceover explains.",
+      "guide_voiceover": "Riya: If you don't understand this, it can be like not knowing when to put more money in your piggy bank. It can make it harder to save for other things you want, like a new bike or a trip to the beach.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: If you don't understand this, it can be like not knowing when to put more money in your piggy bank. It can make it harder to save for other things you want, like a new bike or a trip to the beach.",
+      "visual_prompt": "Two-path illustration: one path shows a person making an informed decision, the other shows the consequence of not knowing. Friendly, non-scary visual. No doom and gloom."
+    },
+    {
+      "scene_number": 6,
+      "arc_stage": "takeaway",
+      "duration_seconds": 5,
+      "visual_direction": "Closing shot: both Riya and Arjun on screen. Checklist animates in. Riya smiles and gestures to follow. Upbeat closing music. Call to action text appears.",
+      "guide_voiceover": "Riya: The best thing you can do is to ask your bank about EMI resets and how they affect your payments. It's like asking your parents about when you need to put more money in your piggy bank.",
+      "learner_voiceover": "",
+      "on_screen_text": "Riya: The best thing you can do is to ask your bank about EMI resets and how they affect your payments. It's like asking your parents about when you need to put more money in your piggy bank.",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette."
+    },
+    {
+      "scene_number": 7,
+      "arc_stage": "cta",
+      "duration_seconds": 3,
+      "visual_direction": "Closing card. Both characters on screen. Call-to-action text animates in. Upbeat music fades out.",
+      "guide_voiceover": "Follow for more money basics — one concept at a time!",
+      "learner_voiceover": "",
+      "on_screen_text": "Follow for more money basics. Save this! 📌",
+      "visual_prompt": "Bright closing card with a checklist or single actionable tip. Both characters give a thumbs-up. Riya holds a sign with the takeaway message. Bright, positive colour palette."
+    }
+  ],
+  "aspect_ratio": "9:16",
+  "estimated_duration_seconds": 36,
+  "verified_facts": [
+    "UCBs must check borrowers' repayment capacity for floating-rate housing loans, including possible EMI increases when benchmark rates rise.",
+    "UCBs are advised to have a policy for resetting floating rates on EMI-based housing loans."
+  ],
+  "sources": [
+    "https://rbi.org.in/Scripts/NotificationUser.aspx?Id=12655&Mode=0"
+  ],
+  "caption": "Educational content only; this is not personalised financial advice.",
+  "call_to_action": "Follow for more money basics. Save this for later! 📌",
+  "hashtags": [
+    "#FinancialLiteracy",
+    "#MoneyBasics",
+    "#IndiaFinance",
+    "#PersonalFinance",
+    "#LearnWithRiya"
+  ]
+}
